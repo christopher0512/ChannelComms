@@ -10,27 +10,27 @@ If you mount up the button Special will appear, pressing this will make you moun
 
 the P button will popup a will with how much over all time you have played on your account and the currect character at this level
 
-X - Closed the addon window  -  You can get this back by typing /ChannelComms in the chat window
+X - Closes the addon window  -  You can get this back by typing /ChannelComms in the chat window
 ===============
-Button 1 - Brings up a Thank you Menu, 
-	- Pressing the button will say thanks, in solo, Party, Raid, LFR, Instance automatically
+Button 1 - Brings up a Thank you Menu, Pressing the button will say thanks, in solo, Party, Raid, LFR, Instance chat automatically
 	
-Button 2 - Pops up window what you can type in a quest number to see if you completed it
+Button 2 - Pops up window that you can type in a quest number to see if you completed it
 
 Button 3 - Enable / Disable things that could get in the way during a raid or dungeon
 
-Button 4 - Check your gear score quick looks, also Low to high or high to look for a quick look at your worst or best pieces
+Button 4 - Check your gear score quick look, also Low to high or high to low sorting, for a quick look at your worst or best pieces
 
-Button 5 - Rolls, if you need a (1-100) roll this put on in solo, Party, Raid, LFR, Instance automatically
+Button 5 - Rolls, if you need a (1-100) roll this puts the number in solo, Party, Raid, LFR, Instance chat automatically
 
-Button 6 - Dungeons are raid lockout quick look
+Button 6 - Dungeons and Raid lockout quick look
 
-Button 7 - Click another player, then click this button, it gives you their gear listing and if you want to trade with them click the trade button and it open the trade window between you and the target as well as you bags.
+Button 7 - Click another player, then click this button, it gives you their gear listing 
+ if you want to trade with them click the trade button and it opens the trade window between you and the target as well as you bags.
 
 Button 8 - Leave Party running a lot of old raids for mogs?  click this when done
 
 ==================
-Next is a lot of fun emotes, if you have others you would like to use edit the ChannelComms.lua and change these in the array.
+Next is a lot of fun emotes, if you have others you would like to use edit the ChannelComms.lua and change these in the array near the bottom of the script.
 
 It will limit the button to 6 characters
 You can also put an IF statement in there to preserve the emote, and set the button to what you want without having it clip at the first 6 characters
