@@ -16,5 +16,6 @@ Buttons\GearScoreChecker.lua
 Buttons\LetsRoll.lua
 Buttons\LockoutInfo.lua
 Buttons\InspectorButton.lua
+Buttons\SoundOutputButton.lua
 Buttons\LeaveGroup.lua
 XML\ChannelComms.xml

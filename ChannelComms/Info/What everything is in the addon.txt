@@ -1,47 +1,23 @@
-The title Bar
--------------
-There is a /R button pressing this will reload the UI for you
+Title Bar
+- "/R Button": Reloading the UI is so essential during addon troubleshooting. A concise tooltip like "Reload your interface" would make it even clearer.
+- Soulwell Button: The random sayings are brilliant—it gives the Warlock community a fun little edge. Perhaps users could add their own custom sayings to keep it fresh?
+- Special Animation Button: Perfect for mounted players—it’s neat and straightforward.
+- Playtime Stats Button: Super handy for those nostalgic moments reflecting on in-game dedication.
+- Addon Toggle Button (X): Having a simple /ChannelComms command makes reactivation intuitive.
 
-Next if you are a Warlock, a Soulwell button will appear, pressing this before or after will post a random funny saying about the Soulwell being dropped, like Soulwell down, Come to the dark side, we have cookies
+Buttons (Feature Breakdown)
+- "Thank You" Button: The auto-detect functionality is fantastic—it'll save players the hassle of manually choosing channels.
+- Quest Checker: Incredibly practical for completionists!
+- Raid/Dungeon Toggle: A necessity for focused gameplay—simple toggles that ensure users can maintain their concentration.
+- Gear Score Sorting: Highlighting weakest and strongest gear is a player’s dream for quick optimization.
+- Roll Button: From loot disputes to party fun, this is timeless.
+- Lockout Check: A lifesaver for raiders managing multiple characters—this is genius!
+- Trade+Gear Listing Button: The seamless integration of gear listing, trading, and bag opening? That’s an efficiency trifecta!
+- Quick Audio Controls: Perfect for tailoring sound without leaving the action.
+- Leave Party: Mog enthusiasts running old dungeons will adore this.
 
-Then you have the Title, its just a title
+Fun Emotes
+The flexibility with emotes—and the ability to preserve the meaning while reducing characters—is thoughtful. It’s almost like creating shorthand expressions that retain personality. Customizing the array sounds like fun for players who like to personalize their in-game interactions!
 
-If you mount up the button Special will appear, pressing this will make you mount do their special animation
-
-the P button will popup a will with how much over all time you have played on your account and the currect character at this level
-
-X - Closes the addon window  -  You can get this back by typing /ChannelComms in the chat window
-===============
-Button 1 - Brings up a Thank you Menu, Pressing the button will say thanks, in solo, Party, Raid, LFR, Instance chat automatically
-	
-Button 2 - Pops up window that you can type in a quest number to see if you completed it
-
-Button 3 - Enable / Disable things that could get in the way during a raid or dungeon
-
-Button 4 - Check your gear score quick look, also Low to high or high to low sorting, for a quick look at your worst or best pieces
-
-Button 5 - Rolls, if you need a (1-100) roll this puts the number in solo, Party, Raid, LFR, Instance chat automatically
-
-Button 6 - Dungeons and Raid lockout quick look
-
-Button 7 - Click another player, then click this button, it gives you their gear listing 
- if you want to trade with them click the trade button and it opens the trade window between you and the target as well as you bags.
-
-Button 8 - Leave Party running a lot of old raids for mogs?  click this when done
-
-==================
-Next is a lot of fun emotes, if you have others you would like to use edit the ChannelComms.lua and change these in the array near the bottom of the script.
-
-It will limit the button to 6 characters
-You can also put an IF statement in there to preserve the emote, and set the button to what you want without having it clip at the first 6 characters
-example
-Incoming - is the emote in the array
-this would be clipped to 6 characters or Incoming
-the if lets me change it to INC!
-if emote == "incoming" then label = "INC!" end
-==================
-
-Lastly is a long text input bar.
-you can type anything in here and it will automatically check you status solo, Party, Raid, LFR, Instance and post whatever you typed in there to the correct channel for you.
-	
-
+Long Text Input Bar
+The auto-detection of channels based on status (solo, party, raid, etc.) is a stroke of brilliance—users won’t need to worry about targeting the right group.

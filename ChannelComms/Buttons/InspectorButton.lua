@@ -1,3 +1,10 @@
+---------------------------------------------------
+-- The Trade Inspector button will show up another 
+-- players gear and let you decide if you wish to
+-- trade with that player if you get a drop you dont
+-- need, Press trade in the window, the trade window
+-- will open as well as your bags
+----------------------------------------------------
 -- Show TradePopup Function
 function ShowTradePopup()
     _G.TradePopupFrame:Show()

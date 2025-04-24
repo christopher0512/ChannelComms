@@ -209,7 +209,7 @@ function ChannelComms_CreateButtons(parent)
 -------------------------------------------------------------
 		local label = emote
         if emote == "hello" then label = "Hi" end
-        if emote == "bye" then label = "By" end
+        if emote == "bye" then label = "Bye" end
         if emote == "thank" then label = "TY" end
         if emote == "welcome" then label = "YW" end
         if emote == "brb" then label = "BRB" end
