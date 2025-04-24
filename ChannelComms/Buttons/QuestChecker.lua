@@ -11,7 +11,7 @@ questCheckButton:SetPoint("LEFT", tymenubutton, "RIGHT", 2, 0) -- Positioned nex
 
 -- Add an icon for the button
 local questCheckIcon = questCheckButton:CreateTexture(nil, "ARTWORK")
-questCheckIcon:SetTexture("Interface\\Icons\\achievement_quests_completed_daily_06") -- Quest completion icon
+questCheckIcon:SetTexture("Interface\\Icons\\inv_misc_scrollrolled02b") -- Quest completion icon
 questCheckIcon:SetAllPoints(questCheckButton)
 
 questCheckButton:SetScript("OnEnter", function(self)

@@ -2,7 +2,7 @@
 _G.lockoutButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
 lockoutButton:SetSize(32, 32)
 lockoutButton:SetPoint("LEFT", rollButton, "RIGHT", 2, 0)
-lockoutButton:SetNormalTexture("Interface\\Icons\\achievement_dungeon_toldagor")
+lockoutButton:SetNormalTexture("Interface\\Icons\\inv_10_misc_dragonorb_color1")
 
 -- Tooltip
 lockoutButton:SetScript("OnEnter", function()

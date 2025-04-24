@@ -9,7 +9,7 @@
 
 -- Set up icon for the gear score button
 	local gearScoreIcon = gearScoreButton:CreateTexture(nil, "ARTWORK")
-	gearScoreIcon:SetTexture("Interface\\Icons\\achievement_challengemode_platinum") -- Icon texture
+	gearScoreIcon:SetTexture("Interface\\Icons\\inv_chest_plate_nazmirraidmythic_d_01") -- Icon texture
 	gearScoreIcon:SetAllPoints(gearScoreButton)
 
 	gearScoreButton:SetScript("OnEnter", function(self)

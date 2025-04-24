@@ -113,7 +113,7 @@ end
 _G.TradeInspectorButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
 TradeInspectorButton:SetSize(32, 32)
 TradeInspectorButton:SetPoint("TOPLEFT", lockoutButton, "TOPRIGHT", 5, 0)
-TradeInspectorButton:SetNormalTexture("Interface\\Icons\\inv_helm_glasses_b_01_black_black")
+TradeInspectorButton:SetNormalTexture("Interface\\Icons\\inv_professions_inscription_scribesmagnifyingglass_silver")
 
 -- Disable button while popup is active
 TradeInspectorButton:SetScript("OnClick", function()
