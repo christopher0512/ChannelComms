@@ -112,18 +112,18 @@ end)
 local musicOnButton = CreateFrame("Button", nil, popupFrame, "UIPanelButtonTemplate")
 musicOnButton:SetSize(80, 22)
 musicOnButton:SetPoint("BOTTOMLEFT", popupFrame, "BOTTOMLEFT", 60, 90) -- Scooted music buttons up
-musicOnButton:SetText("Music On")
+musicOnButton:SetText("Music Off")
 musicOnButton:SetScript("OnClick", function()
-    SetCVar("Sound_EnableMusic", 1)
+    SetCVar("Sound_EnableMusic", 0)
     print("Music turned on!")
 end)
 
 local musicOffButton = CreateFrame("Button", nil, popupFrame, "UIPanelButtonTemplate")
 musicOffButton:SetSize(80, 22)
 musicOffButton:SetPoint("BOTTOMRIGHT", popupFrame, "BOTTOMRIGHT", -60, 90) -- Scooted music buttons up
-musicOffButton:SetText("Music Off")
+musicOffButton:SetText("Music On")
 musicOffButton:SetScript("OnClick", function()
-    SetCVar("Sound_EnableMusic", 0)
+    SetCVar("Sound_EnableMusic", 1)
     print("Music turned off!")
 end)
 
