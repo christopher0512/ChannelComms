@@ -1,7 +1,7 @@
 -- Create the Master Toggle Button
 _G.masterToggleButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
 masterToggleButton:SetSize(32, 32)
-masterToggleButton:SetPoint("LEFT", questCheckButton, "RIGHT", 2, 0)
+masterToggleButton:SetPoint("LEFT", questCheckButton, "RIGHT", 1, 0)
 
 -- Set up icon for the master toggle button
 local masterToggleIcon = masterToggleButton:CreateTexture(nil, "ARTWORK")

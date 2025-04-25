@@ -3,7 +3,7 @@
 -------------------------------------------------------------
 	_G.leaveGroupButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
 	leaveGroupButton:SetSize(32, 32) -- Adjust size for visibility
-	leaveGroupButton:SetPoint("LEFT", SoundOutputButton, "RIGHT", 2, 0) -- Positioned next to Gear Score button
+	leaveGroupButton:SetPoint("LEFT", LootsButton, "RIGHT", 1, 0) -- Positioned next to Gear Score button
 	leaveGroupButton:SetNormalTexture("Interface\\Icons\\ability_hunter_beastsoothe") -- Hand icon
 
 -- Add click functionality to leave the group

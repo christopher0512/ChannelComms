@@ -7,13 +7,23 @@ Title Bar
 
 Buttons (Feature Breakdown)
 - "Thank You" Button: The auto-detect functionality is fantastic—it'll save players the hassle of manually choosing channels.
+
 - Quest Checker: Incredibly practical for completionists!
+
 - Raid/Dungeon Toggle: A necessity for focused gameplay—simple toggles that ensure users can maintain their concentration.
+
 - Gear Score Sorting: Highlighting weakest and strongest gear is a player’s dream for quick optimization.
+
 - Roll Button: From loot disputes to party fun, this is timeless.
+
 - Lockout Check: A lifesaver for raiders managing multiple characters—this is genius!
+
 - Trade+Gear Listing Button: The seamless integration of gear listing, trading, and bag opening? That’s an efficiency trifecta!
+
 - Quick Audio Controls: Perfect for tailoring sound without leaving the action.
+
+- Loot: This button opens up a window that tracks your loot drops.  It auto updates is you want to keep it open.  Also shows your current gold on your character.  If you close the window it will remember you loot from when you closed it and add any loot since you closed it.
+
 - Leave Party: Mog enthusiasts running old dungeons will adore this.
 
 Fun Emotes
