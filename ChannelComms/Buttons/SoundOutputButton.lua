@@ -9,7 +9,7 @@
 -- Create the new button (global reference)
 	_G.SoundOutputButton = CreateFrame("Button", "SoundOutputButton", UIParent, "UIPanelButtonTemplate")
 	SoundOutputButton:SetSize(32, 32)
-	SoundOutputButton:SetPoint("TOPLEFT", TradeInspectorButton, "TOPRIGHT", 1, 0)
+	SoundOutputButton:SetPoint("TOPLEFT", masterToggleButton, "TOPRIGHT", 1, 0)
 	SoundOutputButton:SetNormalTexture("Interface\\Icons\\inv_helm_armor_earmuffs_b_01_alliance")
 	SoundOutputButton:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
 	SoundOutputButton:EnableMouse(true)
@@ -71,7 +71,7 @@ closeButton:SetScript("OnClick", function()
 end)
 
 -- Dropdown menu for audio output sources
-local audioDropdown = CreateFrame("Frame", "AudioDropdown", popupFrame, "UIDropDownMenuTemplate")
+local audioDropdown = CreateFrame("Frame", "masterToggleButton", popupFrame, "UIDropDownMenuTemplate")
 audioDropdown:SetPoint("TOP", titleBackground, "BOTTOM", 0, -5) -- Scooted the dropdown up slightly
 UIDropDownMenu_SetWidth(audioDropdown, 200)
 

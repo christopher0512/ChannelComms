@@ -12,15 +12,15 @@ Buttons (Feature Breakdown)
 
 - Raid/Dungeon Toggle: A necessity for focused gameplay—simple toggles that ensure users can maintain their concentration.
 
+- Quick Audio Controls: Perfect for tailoring sound without leaving the action.
+
+- Lockout Check: A lifesaver for raiders managing multiple characters—this is genius!
+
 - Gear Score Sorting: Highlighting weakest and strongest gear is a player’s dream for quick optimization.
 
 - Roll Button: From loot disputes to party fun, this is timeless.
 
-- Lockout Check: A lifesaver for raiders managing multiple characters—this is genius!
-
-- Trade+Gear Listing Button: The seamless integration of gear listing, trading, and bag opening? That’s an efficiency trifecta!
-
-- Quick Audio Controls: Perfect for tailoring sound without leaving the action.
+- Trade+Gear Listing Button: The seamless integration of gear listing, trading, and bag opening? The seamless integration of gear listing, trading, and bag opening? Click another player and check their gear.	If you want to trade with them click the built in trade button, this will automatically open a trade window with the player and your bags
 
 - Loot: This button opens up a window that tracks your loot drops.  It auto updates is you want to keep it open.  Also shows your current gold on your character.  If you close the window it will remember you loot from when you closed it and add any loot since you closed it.
 

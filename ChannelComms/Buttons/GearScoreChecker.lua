@@ -5,7 +5,7 @@
 
 	_G.gearScoreButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
 	gearScoreButton:SetSize(32, 32) -- Button size
-	gearScoreButton:SetPoint("LEFT", masterToggleButton, "RIGHT", 1, 0) -- Position next to Toggle Tool Tips Button
+	gearScoreButton:SetPoint("LEFT", lockoutButton, "RIGHT", 1, 0) -- Position next to Toggle Tool Tips Button
 
 -- Set up icon for the gear score button
 	local gearScoreIcon = gearScoreButton:CreateTexture(nil, "ARTWORK")

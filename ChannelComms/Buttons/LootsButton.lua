@@ -10,7 +10,7 @@ _G.lootHistory = _G.lootHistory or {}
 -- Create the LootsButton
 _G.LootsButton = CreateFrame("Button", "LootsButton", UIParent, "UIPanelButtonTemplate")
 LootsButton:SetSize(32, 32)
-LootsButton:SetPoint("BOTTOMLEFT", SoundOutputButton, "BOTTOMRIGHT", 1, 0)
+LootsButton:SetPoint("BOTTOMLEFT", TradeInspectorButton, "BOTTOMRIGHT", 1, 0)
 LootsButton:SetFrameStrata("MEDIUM")
 LootsButton:SetFrameLevel(10)
 LootsButton:EnableMouse(true)
