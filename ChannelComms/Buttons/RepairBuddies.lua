@@ -256,7 +256,7 @@ end
 local repairBuddies = {
     {itemID = 49040, name = "Jeeves", icon = "Interface\\Icons\\inv_misc_head_clockworkgnome_01"},
     {itemID = 221957, name = "Algari Repair Bot 110", icon = "Interface\\Icons\\achievement_dungeon_ulduarraid_irongolem_01"},
-	{itemID = 132514, name = "Auto-Hammer", icon = "Interface\\Icons\\inv_engineering_autohammer"},
+    {itemID = 132514, name = "Auto-Hammer", icon = "Interface\\Icons\\inv_engineering_autohammer"},
     {itemID = 144341, name = "Rechargeable Reaves Battery", icon = "Interface\\Icons\\inv_engineering_reavesmodule"},
     {itemID = 132523, name = "Reeves Battery", icon = "Interface\\Icons\\inv_engineering_reavesmodule"},
     {itemID = 40769, name = "Scrapbot Construction Kit", icon = "Interface\\Icons\\inv_misc_enggizmos_14"},
@@ -268,7 +268,7 @@ local repairBuddies = {
 local tooltipData = {
     ["Jeeves"] = "Northrend Engineering (75) - Schematic drops from Mechs around 40 40 in Storm Peaks",
     ["Prototype Algari Repair Bot 110"] = "Learned from Khaz Algar Engineering (1)",
-	["Auto-Hammer"] = "Taught by Schematic: Auto-Hammer Rank (1-3) Legion",
+    ["Auto-Hammer"] = "Taught by Schematic: Auto-Hammer Rank (1-3) Legion",
     ["Rechargeable Reaves Battery"] = "Legion Engineering (60) - Dalaran",
     ["Reeves Battery"] = "Legion Engineering (1) - Dalaran",
     ["Scrapbot Construction Kit"] = "Northrend - Quest The Prototype Console (12889)",
@@ -280,8 +280,29 @@ local tooltipData = {
 local repairRowYOffset = -200 -- Starting offset for repair buddy rows
 local statusButtons = {} -- Store status buttons for dynamic updates
 
--- Function to update buddy statuses
--- Function to update buddy statuses
+-- Function to poll bag slots and update buddy slot data
+local function UpdateBuddyBagSlots()
+    for _, buddy in ipairs(repairBuddies) do
+        buddy.slot = nil -- Clear any existing slot data
+
+        for bag = 0, NUM_BAG_SLOTS do
+            for slot = 1, C_Container.GetContainerNumSlots(bag) do
+                local itemID = C_Container.GetContainerItemID(bag, slot)
+                if itemID == buddy.itemID then
+                    buddy.slot = { bag = bag, slot = slot }
+                    print(string.format("Found %s in Bag %d, Slot %d", buddy.name, bag, slot))
+                    break
+                end
+            end
+            if buddy.slot then break end -- Stop searching once found
+        end
+
+        if not buddy.slot then
+            print(string.format("Could not find %s in any bag.", buddy.name))
+        end
+    end
+end
+
 -- Function to update buddy statuses
 local function RefreshBuddyStatuses()
     for index, buddy in ipairs(repairBuddies) do
@@ -315,12 +336,42 @@ local function RefreshBuddyStatuses()
     end
 end
 
+-- Function to handle button clicks
+local function OnBuddyButtonClick(buddy)
+    if buddy.slot then
+        local start, duration = C_Container.GetContainerItemCooldown(buddy.slot.bag, buddy.slot.slot)
+        if start == 0 and duration == 0 then
+            -- Prepare the macro text
+            local macroText = string.format("/use %d %d", buddy.slot.bag, buddy.slot.slot)
+
+            -- Whisper the macro to the player
+            SendChatMessage(string.format("To use %s, copy and paste this macro: %s, Because the Blizzard UI blocks calls like this in addons, but not macros", buddy.name, macroText), "WHISPER", nil, UnitName("player"))
+        else
+            -- Cooldown detected
+            local cooldownRemaining = math.ceil(duration - (GetTime() - start))
+            local cooldownMinutes = math.ceil(cooldownRemaining / 60)
+            SendChatMessage(string.format("%s is on cooldown for %d minutes.", buddy.name, cooldownMinutes), "WHISPER", nil, UnitName("player"))
+        end
+    else
+        -- Whisper a message if the item is not found
+        SendChatMessage(string.format("%s is not in your bags.", buddy.name), "WHISPER", nil, UnitName("player"))
+    end
+end
+
+-- Example: Refresh bag slots when inventory changes
+local f = CreateFrame("Frame")
+f:RegisterEvent("BAG_UPDATE")
+f:SetScript("OnEvent", function()
+    UpdateBuddyBagSlots()
+    RefreshBuddyStatuses()
+end)
+
 -- Add UI elements for repair buddies
 for index, buddy in ipairs(repairBuddies) do
     -- Column 1: Icon
     local buddyIcon = RepairWindow:CreateTexture(nil, "ARTWORK")
     buddyIcon:SetSize(20, 20)
-	buddyIcon:SetPoint("TOPLEFT", RepairWindow, "TOPLEFT", 14, repairRowYOffset - 5)
+    buddyIcon:SetPoint("TOPLEFT", RepairWindow, "TOPLEFT", 14, repairRowYOffset - 5)
     buddyIcon:SetTexture(buddy.icon)
 
     -- Tooltip for buddy icon
@@ -358,6 +409,12 @@ for index, buddy in ipairs(repairBuddies) do
     statusButton:SetPoint("TOPLEFT", RepairWindow, "TOPLEFT", 258, repairRowYOffset)
     statusButton:SetNormalFontObject("GameFontNormal")
     statusButtons[index] = statusButton -- Store reference for later updates
+    statusButton:SetText("Initializing...")
+
+    -- Assign the click handler
+    statusButton:SetScript("OnClick", function()
+        OnBuddyButtonClick(buddy)
+    end)
 
     -- Adjust row offset for the next buddy
     repairRowYOffset = repairRowYOffset - 30
