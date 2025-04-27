@@ -24,6 +24,12 @@ Buttons (Feature Breakdown)
 
 - Loot: This button opens up a window that tracks your loot drops.  It auto updates is you want to keep it open.  Also shows your current gold on your character.  If you close the window it will remember you loot from when you closed it and add any loot since you closed it.
 
+- Repair Buddies, shows all repair mounts, and engineer bots the character has available.
+you can mount up if you have that mount, and get the status of your bot.
+when you open the window with the vendor on the mount or the repair bot it will auto repair 
+you and sell the junk in your bags.  You can turn off the auto repair and auto sell at the bottom.
+the window will show cool downs and update the bots based on what repair bots are in your bags.
+
 - Leave Party: Mog enthusiasts running old dungeons will adore this.
 
 Fun Emotes

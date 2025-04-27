@@ -12,10 +12,12 @@ Buttons\PlayedButton.lua
 Buttons\tymenubutton.lua
 Buttons\QuestChecker.lua
 Buttons\MasterToggle.lua
+Buttons\SoundOutputButton.lua
+Buttons\LockoutInfo.lua
 Buttons\GearScoreChecker.lua
 Buttons\LetsRoll.lua
-Buttons\LockoutInfo.lua
 Buttons\InspectorButton.lua
-Buttons\SoundOutputButton.lua
+Buttons\LootsButton.lua
+Buttons\RepairBuddies.lua
 Buttons\LeaveGroup.lua
 XML\ChannelComms.xml
