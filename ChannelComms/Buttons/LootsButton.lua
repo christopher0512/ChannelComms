@@ -104,28 +104,24 @@ local function AddToLootHistory(message)
 end
 
 -- Refresh Functionality
-_G.DebugLootHistory = _G.DebugLootHistory or function()
+local function RefreshLootsWindow()
     if lootHistory == nil or #lootHistory == 0 then
         LootDisplay:SetText("No loot yet!")
     else
         local lootText = ""
         for _, loot in ipairs(lootHistory) do
-            -- Strip "You receive loot:" for display
-            local filteredLoot = string.gsub(loot, "You receive loot:", "") -- Clean display
+            -- Strip "You receive loot:" and "You receive currency:" for display
+            local filteredLoot = string.gsub(loot, "You receive loot:", "")
+            filteredLoot = string.gsub(filteredLoot, "You receive currency:", "") -- Clean currency display
             lootText = lootText .. string.format("%s\n", filteredLoot)
         end
         LootDisplay:SetText(lootText)
     end
-end
-
-local function RefreshLootsWindow()
-    DebugLootHistory()
     GoldDisplay:SetText(string.format("%s's Current Gold: %s", playerName, FormatGold(GetMoney())))
 end
 
 -- Button Functionality
 LootsButton:SetScript("OnClick", function()
-    print("LootsButton clicked!") -- Debug confirmation
     if not LootsWindow:IsShown() then
         LootsWindow:Show()
         LootsButton:Disable()
@@ -148,17 +144,24 @@ end)
 _G.LootEventFrame = CreateFrame("Frame")
 LootEventFrame:RegisterEvent("CHAT_MSG_LOOT")
 LootEventFrame:RegisterEvent("CHAT_MSG_MONEY") -- Specifically capture coin loot
+LootEventFrame:RegisterEvent("CHAT_MSG_CURRENCY") -- Specifically capture non-money currency loot
 
 LootEventFrame:SetScript("OnEvent", function(_, event, message)
     if event == "CHAT_MSG_LOOT" then
         -- Check for item loot
         if string.find(message, "You receive loot:") then
-            local time = date("%H:%M") -- Add a timestamp
+            local time = date("%H:%M")
             AddToLootHistory(string.format("%s %s", time, message))
         end
     elseif event == "CHAT_MSG_MONEY" then
         -- Add timestamped coin loot directly
         local time = date("%H:%M")
         AddToLootHistory(string.format("%s %s", time, message))
+    elseif event == "CHAT_MSG_CURRENCY" then
+        -- Check for currency loot
+        if string.find(message, "You receive currency:") then
+            local time = date("%H:%M")
+            AddToLootHistory(string.format("%s %s", time, message))
+        end
     end
 end)
