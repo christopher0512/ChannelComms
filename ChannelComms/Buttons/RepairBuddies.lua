@@ -290,7 +290,7 @@ local function UpdateBuddyBagSlots()
                 local itemID = C_Container.GetContainerItemID(bag, slot)
                 if itemID == buddy.itemID then
                     buddy.slot = { bag = bag, slot = slot }
-                    print(string.format("Found %s in Bag %d, Slot %d", buddy.name, bag, slot))
+                    -- print(string.format("Found %s in Bag %d, Slot %d", buddy.name, bag, slot))
                     break
                 end
             end
@@ -298,7 +298,7 @@ local function UpdateBuddyBagSlots()
         end
 
         if not buddy.slot then
-            print(string.format("Could not find %s in any bag.", buddy.name))
+            -- print(string.format("Could not find %s in any bag.", buddy.name))
         end
     end
 end
