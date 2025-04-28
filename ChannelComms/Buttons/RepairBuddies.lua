@@ -22,10 +22,11 @@
 
 -- Toggle the popup window on button click
 	repairButton:SetScript("OnClick", function()
-		if RepairWindow:IsShown() then
-			RepairWindow:Hide()
-		else
+		-- Safeguard to prevent recursion or stack overflow
+		if not RepairWindow:IsShown() then
 			RepairWindow:Show()
+		else
+			RepairWindow:Hide()
 		end
 	end)
 
