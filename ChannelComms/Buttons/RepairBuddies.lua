@@ -86,128 +86,139 @@
 	end
 
 -- Mount Table
-	local mounts = {
-		{id = 2237, name = "Grizzly Hills Packmaster"},
-		{id = 460, name = "Grand Expedition Yak"},
-		{id = {horde = 284, alliance = 320}, name = "Traveler's Tundra Mammoth"},
-		{id = 1039, name = "Mighty Caravan Brutosaur"}
-	}
+local mounts = {
+    {id = 2237, name = "Grizzly Hills Packmaster"},
+    {id = 460, name = "Grand Expedition Yak"},
+    {id = {horde = 284, alliance = 320}, name = "Traveler's Tundra Mammoth"},
+    {id = 1039, name = "Mighty Caravan Brutosaur"}
+}
+
+-- Mount Icons (Declare this BEFORE it is used)
+local mountIcons = {
+    "Interface\\Icons\\inv_bearmountutility",
+    "Interface\\Icons\\ability_mount_travellersyakmount",
+    "Interface\\Icons\\ability_mount_mammoth_white_3seater",
+    "Interface\\Icons\\inv_brontosaurusmount"
+}
 
 -- Tooltip Data for Mounts
-	local tooltipData = {
-		["Grizzly Hills Packmaster"] = "Available at Blizzard Store",
-		["Grand Expedition Yak"] = "Sold by Uncle BigPocket Kun-Lai Summit 65.4 61.6 - 120k",
-		["Traveler's Tundra Mammoth"] = "Sold by Mei Francis in Dalaran - 16-20k",
-		["Mighty Caravan Brutosaur"] = "Available via Black Market Auctions - Gold Cap"
-	}
+local tooltipData = {
+    ["Grizzly Hills Packmaster"] = "Available at Blizzard Store",
+    ["Grand Expedition Yak"] = "Sold by Uncle BigPocket Kun-Lai Summit (65.4 61.6) - 120k",
+    ["Traveler's Tundra Mammoth"] = "Sold by Mei Francis in Dalaran - 16-20k",
+    ["Mighty Caravan Brutosaur"] = "Available via Black Market Auctions - Gold Cap"
+}
 
 -- Function to Get the Correct Mount ID Based on Faction
-	local function GetMountID(mount)
-		if type(mount.id) == "table" then
-			local faction = UnitFactionGroup("player") -- Returns "Horde" or "Alliance"
-			return faction == "Horde" and mount.id.horde or mount.id.alliance
-		else
-			return mount.id
-		end
-	end
-
-	local function IsMountCollected(id)
--- Handle both faction-specific and general mounts
-    local mountId
-    if string.sub(id, 1, 1) == "m" then
-        -- Mount IDs prefixed with "m" (hypothetical case)
-        mountId = string.sub(id, 2, -1)
+local function GetMountID(mount)
+    if type(mount.id) == "table" then
+        local faction = UnitFactionGroup("player") -- Returns "Horde" or "Alliance"
+        return faction == "Horde" and mount.id.horde or mount.id.alliance
     else
-        -- General case: derive the mount ID directly
-        mountId = id
+        return mount.id
     end
-
-    local mountName, _, _, _, _, _, _, _, _, _, isCollected = C_MountJournal.GetMountInfoByID(mountId)
-    return isCollected -- Returns true if collected, false otherwise
-	end
-
-	local mountIcons = { -- Define the icons in the correct order
-		"Interface\\Icons\\inv_bearmountutility",
-		"Interface\\Icons\\ability_mount_travellersyakmount",
-		"Interface\\Icons\\ability_mount_mammoth_white_3seater",
-		"Interface\\Icons\\inv_brontosaurusmount"
-	}
-
-	local rowYOffset = -70 -- Initial vertical offset for rows
-	local rowSpacing = 30 -- Space between rows
-
-	for index, mount in ipairs(mounts) do
--- Column 1: Icon
-    local mountIcon = RepairWindow:CreateTexture(nil, "ARTWORK")
-    mountIcon:SetSize(20, 20)
-    mountIcon:SetPoint("TOPLEFT", RepairWindow, "TOPLEFT", 14, rowYOffset - 5)
-    mountIcon:SetTexture(mountIcons[index])
-
--- Tooltip for mount icon
-    mountIcon:EnableMouse(true)
-    mountIcon:SetScript("OnEnter", function()
-        GameTooltip:SetOwner(mountIcon, "ANCHOR_RIGHT")
-        local tooltipText = tooltipData[mount.name] or "No additional information available."
-        GameTooltip:SetText(tooltipText)
-        GameTooltip:Show()
-    end)
-    mountIcon:SetScript("OnLeave", function()
-        GameTooltip:Hide()
-    end)
-
--- Column 2: Mount Name
-    local mountNameText = RepairWindow:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    mountNameText:SetPoint("LEFT", mountIcon, "RIGHT", 5, 0)
-    mountNameText:SetText(mount.name)
-
--- Tooltip for mount name
-    mountNameText:EnableMouse(true)
-    mountNameText:SetScript("OnEnter", function()
-        GameTooltip:SetOwner(mountNameText, "ANCHOR_RIGHT")
-        local tooltipText = tooltipData[mount.name] or "No additional information available."
-        GameTooltip:SetText(tooltipText)
-        GameTooltip:Show()
-    end)
-    mountNameText:SetScript("OnLeave", function()
-        GameTooltip:Hide()
-    end)
-
--- Column 3: Status or Label
-    local mountID = GetMountID(mount)
-    local isCollected = IsMountCollected(mountID)
-
-    if not isCollected then
-        -- Center the "Not Collected" label vertically
-        local notCollectedLabel = RepairWindow:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        notCollectedLabel:SetPoint("CENTER", RepairWindow, "TOPLEFT", 304, rowYOffset - 15) -- Adjust Y offset for vertical centering
-        notCollectedLabel:SetText("Not Collected")
-        notCollectedLabel:SetTextColor(1, 0, 0) -- Red for visibility
-    else
-        local statusWidget = CreateFrame("Button", nil, RepairWindow, "UIPanelButtonTemplate")
-        statusWidget:SetSize(70, 25)
-        statusWidget:SetPoint("TOPLEFT", RepairWindow, "TOPLEFT", 270, rowYOffset)
-        statusWidget:SetText(IsMounted() and "Dismount" or "Mount")
-        statusWidget:SetScript("OnClick", function()
-            if IsMounted() then
-                Dismount()
-                statusWidget:SetText("Mount")
-            else
-                C_MountJournal.SummonByID(mountID)
-                statusWidget:SetText("Dismount")
-            end
-        end)
-
-        RepairWindow:HookScript("OnShow", function()
-            if IsMounted() then
-                statusWidget:SetText("Dismount")
-            else
-                statusWidget:SetText("Mount")
-            end
-        end)
-    end
-
-    rowYOffset = rowYOffset - rowSpacing -- Adjust for tighter row spacing
 end
+
+-- Function to Determine if a Mount is Collected
+local function IsMountCollected(id)
+    local mountName, _, _, _, _, _, _, _, _, _, isCollected = C_MountJournal.GetMountInfoByID(id)
+    return isCollected -- Returns true if collected, false otherwise
+end
+
+-- Function to Refresh Mount Data
+local function RefreshMountData()
+    for index, mount in ipairs(mounts) do
+        local mountID = GetMountID(mount)
+        local isCollected = IsMountCollected(mountID)
+
+        -- Debugging output
+        print("Mount:", mount.name, "isCollected:", tostring(isCollected))
+    end
+end
+
+-- Function to Refresh Mount Buttons
+local function RefreshMountButtons()
+    local rowYOffset = -70 -- Reset vertical offset for rows
+    local rowSpacing = 30 -- Space between rows
+
+    for index, mount in ipairs(mounts) do
+        local mountID = GetMountID(mount)
+        local isCollected = IsMountCollected(mountID)
+
+        -- Column 1: Icon
+        local mountIcon = RepairWindow:CreateTexture(nil, "ARTWORK")
+        mountIcon:SetSize(20, 20)
+        mountIcon:SetPoint("TOPLEFT", RepairWindow, "TOPLEFT", 14, rowYOffset - 5)
+        mountIcon:SetTexture(mountIcons[index]) -- This line should now work!
+
+        -- Tooltip for mount icon
+        mountIcon:EnableMouse(true)
+        mountIcon:SetScript("OnEnter", function()
+            GameTooltip:SetOwner(mountIcon, "ANCHOR_RIGHT")
+            local tooltipText = tooltipData[mount.name] or "No additional information available."
+            GameTooltip:SetText(tooltipText)
+            GameTooltip:Show()
+        end)
+        mountIcon:SetScript("OnLeave", function()
+            GameTooltip:Hide()
+        end)
+
+        -- Column 2: Mount Name
+        local mountNameText = RepairWindow:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        mountNameText:SetPoint("LEFT", mountIcon, "RIGHT", 5, 0)
+        mountNameText:SetText(mount.name)
+
+        -- Tooltip for mount name
+        mountNameText:EnableMouse(true)
+        mountNameText:SetScript("OnEnter", function()
+            GameTooltip:SetOwner(mountNameText, "ANCHOR_RIGHT")
+            local tooltipText = tooltipData[mount.name] or "No additional information available."
+            GameTooltip:SetText(tooltipText)
+            GameTooltip:Show()
+        end)
+        mountNameText:SetScript("OnLeave", function()
+            GameTooltip:Hide()
+        end)
+
+        -- Column 3: Status or Label
+        if not isCollected then
+            local notCollectedLabel = RepairWindow:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            notCollectedLabel:SetPoint("CENTER", RepairWindow, "TOPLEFT", 304, rowYOffset - 15)
+            notCollectedLabel:SetText("Not Collected")
+            notCollectedLabel:SetTextColor(1, 0, 0) -- Red for visibility
+        else
+            local statusWidget = CreateFrame("Button", nil, RepairWindow, "UIPanelButtonTemplate")
+            statusWidget:SetSize(70, 25)
+            statusWidget:SetPoint("TOPLEFT", RepairWindow, "TOPLEFT", 270, rowYOffset)
+            statusWidget:SetText(IsMounted() and "Dismount" or "Mount")
+            statusWidget:SetScript("OnClick", function()
+                if IsMounted() then
+                    Dismount()
+                    statusWidget:SetText("Mount")
+                else
+                    C_MountJournal.SummonByID(mountID)
+                    statusWidget:SetText("Dismount")
+                end
+            end)
+        end
+
+        rowYOffset = rowYOffset - rowSpacing -- Adjust for next row
+    end
+end
+
+-- Event Frame to Handle Mount Data and UI Refresh
+local eventFrame = CreateFrame("Frame")
+eventFrame:RegisterEvent("PLAYER_LOGIN") -- Ensure data is loaded after login
+eventFrame:RegisterEvent("COMPANION_UPDATE") -- Capture updates to companion data
+eventFrame:SetScript("OnEvent", function(self, event, ...)
+    if event == "PLAYER_LOGIN" or event == "COMPANION_UPDATE" then
+        C_Timer.After(1, function()
+            RefreshMountData() -- Refresh mount collection statuses
+            RefreshMountButtons() -- Update the UI with the correct statuses
+        end)
+    end
+end)
+
 
 -- Add Checkboxes to the Popup Window
 	local autoRepairCheckbox = CreateFrame("CheckButton", "AutoRepairCheckbox", RepairWindow, "UICheckButtonTemplate")
