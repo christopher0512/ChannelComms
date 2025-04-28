@@ -21,12 +21,14 @@
 	repairButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
 -- Toggle the popup window on button click
+	local isRepairWindowShown = false
 	repairButton:SetScript("OnClick", function()
-		-- Safeguard to prevent recursion or stack overflow
-		if not RepairWindow:IsShown() then
+		if not isRepairWindowShown then
 			RepairWindow:Show()
+			isRepairWindowShown = true
 		else
 			RepairWindow:Hide()
+			isRepairWindowShown = false
 		end
 	end)
 
