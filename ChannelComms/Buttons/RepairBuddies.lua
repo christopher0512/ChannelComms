@@ -126,9 +126,25 @@ local function IsMountCollected(id)
     return isCollected -- Returns true if collected, false otherwise
 end
 
+-- Function to check if the current zone permits mounting
+local function DoesCurrentZoneAllowMounting()
+    local inInstance, instanceType = IsInInstance()
+    if not inInstance or (instanceType ~= "raid" and IsOutdoors()) then
+        return true -- Allow mounting in non-raid instances or outdoors
+    end
+
+    local subZone = GetSubZoneText() -- Get the current sub-zone text
+    local allowedSubZones = {
+        ["Valley of Strength"] = true, -- Example sub-zone names
+        ["The Sanctum"] = true,
+    }
+
+    return allowedSubZones[subZone] or IsOutdoors() -- Allow mounting if the sub-zone matches or the area is outdoors
+end
+
 -- Function to Check if Player Can Mount
 local function CanPlayerMount()
-    return IsOutdoors() and not IsInRaid() and not UnitInVehicle("player")
+    return IsOutdoors() and not UnitInVehicle("player") and (not IsInRaid() or DoesCurrentZoneAllowMounting())
 end
 
 -- Function to Refresh Mount Data
