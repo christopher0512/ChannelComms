@@ -1,3 +1,14 @@
+ChannelComms = ChannelComms or {}
+ChannelComms.Modules = ChannelComms.Modules or {}
+
+if not ChannelComms then
+    print("Error: ChannelComms global is not defined. Ensure the core addon is loaded first!")
+    return
+end
+
+-- Make this module globally accessible within ChannelComms
+ChannelComms.Modules.CollectibleTracker = CollectibleTracker
+
 local function CreateTitleBar(parent)
 -- Create the title bar frame
     _G.titleBar = CreateFrame("Frame", nil, parent)

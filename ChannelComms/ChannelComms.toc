@@ -5,7 +5,9 @@
 ## Author: Christopher Young
 ## IconTexture: Interface\AddOns\Channelcomms\Textures\channelcomms.png
 
+## Core Addon File
 ChannelComms.lua
+## Buttons
 Buttons\SoulWell.lua 
 Buttons\MountSpecial.lua
 Buttons\PlayedButton.lua
@@ -20,4 +22,7 @@ Buttons\InspectorButton.lua
 Buttons\LootsButton.lua
 Buttons\RepairBuddies.lua
 Buttons\LeaveGroup.lua
+## Modules
+Modules/CollectibleTracker/CollectibleTracker.lua
+## XML Frames
 XML\ChannelComms.xml

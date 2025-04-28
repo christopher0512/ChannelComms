@@ -5,6 +5,8 @@ Title Bar
 - Playtime Stats Button: Super handy for those nostalgic moments reflecting on in-game dedication.
 - Addon Toggle Button (X): Having a simple /ChannelComms command makes reactivation intuitive.
 
+- Added a background process to check the collected status of items by pointing at them
+
 Buttons (Feature Breakdown)
 - "Thank You" Button: The auto-detect functionality is fantastic—it'll save players the hassle of manually choosing channels.
 

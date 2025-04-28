@@ -22,13 +22,30 @@
 
 -- Toggle the popup window on button click
 	local isRepairWindowShown = false
-	repairButton:SetScript("OnClick", function()
-		if not isRepairWindowShown then
-			RepairWindow:Show()
-			isRepairWindowShown = true
-		else
-			RepairWindow:Hide()
-			isRepairWindowShown = false
+
+	local function InitializeRepairButton()
+		repairButton:SetScript("OnClick", function()
+			if not isRepairWindowShown then
+				if not RepairWindow:IsShown() then
+					RepairWindow:Show()
+					isRepairWindowShown = true
+				end
+			else
+				if RepairWindow:IsShown() then
+					RepairWindow:Hide()
+					isRepairWindowShown = false
+				end
+			end
+		end)
+	end
+
+-- Register the event for login and zoning
+	local f = CreateFrame("Frame")
+	f:RegisterEvent("PLAYER_LOGIN") -- Fires after all addons are loaded at login
+	f:RegisterEvent("ZONE_CHANGED_NEW_AREA") -- Fires when entering a new zone
+	f:SetScript("OnEvent", function(_, event)
+		if event == "PLAYER_LOGIN" or event == "ZONE_CHANGED_NEW_AREA" then
+			InitializeRepairButton()
 		end
 	end)
 
