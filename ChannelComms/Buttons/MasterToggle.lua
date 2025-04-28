@@ -60,7 +60,6 @@ local function CreateMapSizeRow(parent, yOffset, toggleFunction, initialState)
         sizeStatusLabel:SetText("2.0")
     end)
 end
-
 -- Create the Popup Window
 local popupFrame
 
@@ -145,15 +144,42 @@ masterToggleButton:SetScript("OnClick", function()
         print("Tooltips " .. (state and "On" or "Off"))
     end
 
-    local function ToggleTalkingHead(state)
-        if state then
-            TalkingHeadFrame:Show()
-            print("Talking Head Frame On")
-        else
-            TalkingHeadFrame:Hide()
-            print("Talking Head Frame Off")
-        end
-    end
+	local function ToggleTalkingHead(state)
+		if state then
+			TalkingHeadFrame:Show()
+			print("Talking Head Frame On")
+		else
+			TalkingHeadFrame:Hide()
+			print("Talking Head Frame Off")
+		end
+	end
+
+-- Function to Force Hide Talking Head Frame When Needed
+	local function SuppressTalkingHead()
+		if not TalkingHeadFrame:IsShown() then return end
+		TalkingHeadFrame:Hide()
+		-- print("Talking Head Frame forcibly hidden")
+	end
+
+-- Hook into TALKINGHEAD_REQUESTED Event
+	local eventFrame = CreateFrame("Frame")
+	eventFrame:RegisterEvent("TALKINGHEAD_REQUESTED")
+	eventFrame:SetScript("OnEvent", function(self, event, ...)
+		if event == "TALKINGHEAD_REQUESTED" then
+			SuppressTalkingHead()
+		end
+	end)
+
+-- Logic for Talking Head
+	local function ToggleTalkingHead(state)
+		if state then
+			TalkingHeadFrame:Show()
+			print("Talking Head Frame On")
+		else
+			TalkingHeadFrame:Hide()
+			print("Talking Head Frame Off")
+		end
+	end
 
     local function ToggleMiniMap(state)
         MinimapCluster:SetShown(state)
