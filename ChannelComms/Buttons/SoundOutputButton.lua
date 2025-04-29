@@ -89,7 +89,7 @@ local function PopulateAudioDropdown()
             info.text = deviceName
             info.func = function()
                 UIDropDownMenu_SetSelectedValue(audioDropdown, deviceName)
-                print("Selected audio device:", deviceName)
+             --   print("Selected audio device:", deviceName)
                 SetCVar("Sound_OutputDriverIndex", i - 1) -- Set index based on dropdown selection
             end
             UIDropDownMenu_AddButton(info)

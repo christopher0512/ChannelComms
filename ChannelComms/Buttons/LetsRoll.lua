@@ -13,7 +13,7 @@ local function RollAndPost()
     local message = string.format("Rolling... [%d]", rollResult)
 
     SendChatMessage(message, chatType)
-    print("Roll Button Pressed: Result =", rollResult, "Chat Type =", chatType) -- Debug output
+    -- print("Roll Button Pressed: Result =", rollResult, "Chat Type =", chatType) -- -- Debug output
 end
 
 rollButton:SetScript("OnClick", RollAndPost)

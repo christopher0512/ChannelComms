@@ -1,111 +1,114 @@
 -- Helper function to format gold amount as a global
-	_G.FormatGold = _G.FormatGold or function(copperAmount)
-		local gold = math.floor(copperAmount / 10000)
-		return string.format("%d", gold)
-	end
-
--- Create the repairButton
-	_G.repairButton = CreateFrame("Button", "repairButton", UIParent, "UIPanelButtonTemplate")
-	repairButton:SetSize(32, 32) -- Ensure consistent button size
-	--repairButton:SetPoint("CENTER", UIParent, "CENTER", -200, 200) -- Place prominently for testing
-	repairButton:SetPoint("LEFT", LootsButton, "RIGHT", 1, 0) -- Positioned next to Gear Score button	
-	repairButton:SetFrameStrata("MEDIUM")
-	repairButton:SetFrameLevel(10)
-	repairButton:EnableMouse(true)
-	repairButton:SetNormalTexture("Interface\\Icons\\inv_gnometoy")
-	repairButton:SetScript("OnEnter", function(self)
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-		GameTooltip:SetText("Click to open Repair Options")
-		GameTooltip:Show()
-	end)
-	repairButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
+_G.FormatGold = _G.FormatGold or function(copperAmount)
+    local gold = math.floor(copperAmount / 10000)
+    return string.format("%d", gold)
+end
 
 -- Toggle the popup window on button click
-	local isRepairWindowShown = false
+local isRepairWindowShown = false
+local isRunning = false -- Define this safeguard variable outside the function scope
 
-	local function InitializeRepairButton()
-		repairButton:SetScript("OnClick", function()
-			if not isRepairWindowShown then
-				if not RepairWindow:IsShown() then
-					RepairWindow:Show()
-					isRepairWindowShown = true
-				end
-			else
-				if RepairWindow:IsShown() then
-					RepairWindow:Hide()
-					isRepairWindowShown = false
-				end
-			end
-		end)
-	end
+-- Function to initialize repairButton
+local function InitializeRepairButton()
+    repairButton:SetScript("OnClick", function()
+        if isRunning then return end -- Prevent recursive execution
+        isRunning = true -- Activate lock
+
+        -- Toggle RepairWindow visibility
+        if not isRepairWindowShown then
+            RepairWindow:Show()
+            isRepairWindowShown = true
+        else
+            RepairWindow:Hide()
+            isRepairWindowShown = false
+        end
+
+        isRunning = false -- Release lock
+    end)
+end
+
+-- Create the repairButton
+_G.repairButton = CreateFrame("Button", "repairButton", UIParent, "UIPanelButtonTemplate")
+repairButton:SetSize(32, 32) -- Ensure consistent button size
+repairButton:SetPoint("LEFT", LootsButton, "RIGHT", 1, 0) -- Positioned next to Gear Score button
+repairButton:SetFrameStrata("MEDIUM")
+repairButton:SetFrameLevel(10)
+repairButton:EnableMouse(true)
+repairButton:SetNormalTexture("Interface\\Icons\\inv_gnometoy")
+repairButton:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    GameTooltip:SetText("Click to open Repair Options")
+    GameTooltip:Show()
+end)
+repairButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
 -- Register the event for login and zoning
-	local f = CreateFrame("Frame")
-	f:RegisterEvent("PLAYER_LOGIN") -- Fires after all addons are loaded at login
-	f:RegisterEvent("ZONE_CHANGED_NEW_AREA") -- Fires when entering a new zone
-	f:SetScript("OnEvent", function(_, event)
-		if event == "PLAYER_LOGIN" or event == "ZONE_CHANGED_NEW_AREA" then
-			InitializeRepairButton()
-		end
-	end)
+local f = CreateFrame("Frame")
+f:RegisterEvent("PLAYER_LOGIN") -- Fires after all addons are loaded at login
+f:RegisterEvent("ZONE_CHANGED_NEW_AREA") -- Fires when entering a new zone
+f:SetScript("OnEvent", function(_, event)
+    if event == "PLAYER_LOGIN" or event == "ZONE_CHANGED_NEW_AREA" then
+        InitializeRepairButton() -- Call the initialization function
+    end
+end)
 
 -- Create the Popup Window with BackdropTemplate
-	_G.RepairWindow = CreateFrame("Frame", "RepairWindow", UIParent, "BackdropTemplate")
-	RepairWindow:SetSize(375, 530)
-	RepairWindow:SetPoint("CENTER")
-	RepairWindow:SetFrameStrata("DIALOG")
-	RepairWindow:EnableMouse(true)
-	RepairWindow:SetMovable(true)
-	RepairWindow:RegisterForDrag("LeftButton")
-	RepairWindow:SetScript("OnDragStart", RepairWindow.StartMoving)
-	RepairWindow:SetScript("OnDragStop", RepairWindow.StopMovingOrSizing)
-	RepairWindow:Hide() -- Start hidden
+_G.RepairWindow = CreateFrame("Frame", "RepairWindow", UIParent, "BackdropTemplate")
+RepairWindow:SetSize(375, 530)
+RepairWindow:SetPoint("CENTER")
+RepairWindow:SetFrameStrata("DIALOG")
+RepairWindow:EnableMouse(true)
+RepairWindow:SetMovable(true)
+RepairWindow:RegisterForDrag("LeftButton")
+RepairWindow:SetScript("OnDragStart", RepairWindow.StartMoving)
+RepairWindow:SetScript("OnDragStop", RepairWindow.StopMovingOrSizing)
+RepairWindow:Hide() -- Start hidden
 
 -- Add Close ("X") Button to Popup Window
-	local closeButton = CreateFrame("Button", nil, RepairWindow, "UIPanelCloseButton")
-	closeButton:SetPoint("TOPRIGHT", RepairWindow, "TOPRIGHT", -5, -5)
-	closeButton:SetScript("OnClick", function()
-		RepairWindow:Hide() -- Close the popup window
-	end)
+local closeButton = CreateFrame("Button", nil, RepairWindow, "UIPanelCloseButton")
+closeButton:SetPoint("TOPRIGHT", RepairWindow, "TOPRIGHT", -5, -5)
+closeButton:SetScript("OnClick", function()
+    RepairWindow:Hide() -- Close the popup window
+end)
 
-	RepairWindow:SetBackdrop({
-		bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-		edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-		tile = true,
-		tileSize = 32,
-		edgeSize = 32,
-		insets = { left = 8, right = 8, top = 8, bottom = 8 }
-	})
-	RepairWindow:SetBackdropColor(0, 0, 0, 1)
+RepairWindow:SetBackdrop({
+    bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+    edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+    tile = true,
+    tileSize = 32,
+    edgeSize = 32,
+    insets = { left = 8, right = 8, top = 8, bottom = 8 }
+})
+RepairWindow:SetBackdropColor(0, 0, 0, 1)
 
 -- Title Bar Background
-	local titleBackground = RepairWindow:CreateTexture(nil, "BACKGROUND")
-	titleBackground:SetSize(350, 30) -- Set width and height for the background
-	titleBackground:SetPoint("TOP", RepairWindow, "TOP", 0, -10) -- Position the background
-	titleBackground:SetColorTexture(0.4, 0, 0, 1) -- Dark red color (RGBA: 0.6, 0, 0, 1)
+local titleBackground = RepairWindow:CreateTexture(nil, "BACKGROUND")
+titleBackground:SetSize(350, 30) -- Set width and height for the background
+titleBackground:SetPoint("TOP", RepairWindow, "TOP", 0, -10) -- Position the background
+titleBackground:SetColorTexture(0.4, 0, 0, 1) -- Dark red color (RGBA: 0.6, 0, 0, 1)
 
 -- Title Bar Text
-	local playerName = UnitName("player")
-	local RepairTitle = RepairWindow:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
-	RepairTitle:SetPoint("TOP", titleBackground, "TOP", 0, -5) -- Center text in the background
-	RepairTitle:SetText(string.format("|cffffd700%s's Repair Options|r", playerName))
+local playerName = UnitName("player")
+local RepairTitle = RepairWindow:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
+RepairTitle:SetPoint("TOP", titleBackground, "TOP", 0, -5) -- Center text in the background
+RepairTitle:SetText(string.format("|cffffd700%s's Repair Options|r", playerName))
 
 -- Column Headers
-	local columnHeaders = {
-		{title = "Repair Buddies", xOffset = -10, width = 240},
-		{title = "Status", xOffset = 254, width = 100}
-	}
+local columnHeaders = {
+    {title = "Repair Buddies", xOffset = -10, width = 240},
+    {title = "Status", xOffset = 254, width = 100}
+}
 
-	local columnObjects = {}
-	for _, colData in ipairs(columnHeaders) do
-		local colHeader = RepairWindow:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-		colHeader:SetPoint("TOPLEFT", RepairWindow, "TOPLEFT", colData.xOffset, -50)
-		colHeader:SetWidth(colData.width)
-		colHeader:SetJustifyH("CENTER")
-		colHeader:SetText(colData.title)
-		colHeader:SetTextColor(1, 1, 0)
-		table.insert(columnObjects, colHeader)
-	end
+local columnObjects = {}
+for _, colData in ipairs(columnHeaders) do
+    local colHeader = RepairWindow:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    colHeader:SetPoint("TOPLEFT", RepairWindow, "TOPLEFT", colData.xOffset, -50)
+    colHeader:SetWidth(colData.width)
+    colHeader:SetJustifyH("CENTER")
+    colHeader:SetText(colData.title)
+    colHeader:SetTextColor(1, 1, 0)
+    table.insert(columnObjects, colHeader)
+end
 
 -- Mount Table
 local mounts = {

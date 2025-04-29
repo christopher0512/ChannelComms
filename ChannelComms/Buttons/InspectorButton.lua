@@ -112,7 +112,7 @@ function DisplayGearScores(retryCount)
     if not allLoaded and retryCount < 9 then
         C_Timer.After(0.75, function() DisplayGearScores(retryCount + 1) end)
     else
-        print("TradeInspector: Gear scores successfully retrieved.")
+       -- print("TradeInspector: Gear scores successfully retrieved.")
     end
 end
 

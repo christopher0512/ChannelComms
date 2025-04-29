@@ -75,7 +75,7 @@ local function CreateLockoutWindow()
 
             -- **Debugging Check**
             if resetTime == "No Lockout" then
-                print(string.format("Skipping invalid lockout: name='%s', resetTime='%s'", tostring(name), tostring(resetTime)))
+               -- print(string.format("Skipping invalid lockout: name='%s', resetTime='%s'", tostring(name), tostring(resetTime)))
             else
                 -- **Final Controlled Formatting Check**
                 local formattedText = name .. " - Resets in " .. resetTime -- Remove `string.format()`
@@ -88,9 +88,9 @@ local function CreateLockoutWindow()
                     lockoutText:SetText(formattedText)
                     lockoutText:Show()
                     yOffset = yOffset + 20
-                    print("Lockout entry added:", formattedText) -- Debug log
+                  --  print("Lockout entry added:", formattedText) -- Debug log
                 else
-                    print("Skipping entry due to unexpected nil values:", name, resetTime)
+                  --  print("Skipping entry due to unexpected nil values:", name, resetTime)
                 end
             end
         end
