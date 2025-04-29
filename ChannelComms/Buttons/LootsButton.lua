@@ -148,8 +148,8 @@ LootEventFrame:RegisterEvent("CHAT_MSG_CURRENCY") -- Specifically capture non-mo
 
 LootEventFrame:SetScript("OnEvent", function(_, event, message)
     if event == "CHAT_MSG_LOOT" then
-        -- Check for item loot
-        if string.find(message, "You receive loot:") then
+        -- Handle both loot and item messages
+        if string.find(message, "You receive loot:") or string.find(message, "You receive item:") then
             local time = date("%H:%M")
             AddToLootHistory(string.format("%s %s", time, message))
         end

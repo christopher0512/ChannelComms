@@ -96,13 +96,15 @@
 		{title = "Status", xOffset = 254, width = 100}
 	}
 
+	local columnObjects = {}
 	for _, colData in ipairs(columnHeaders) do
 		local colHeader = RepairWindow:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		colHeader:SetPoint("TOPLEFT", RepairWindow, "TOPLEFT", colData.xOffset, -50)
 		colHeader:SetWidth(colData.width)
-		colHeader:SetJustifyH("CENTER") -- Centers text horizontally within its column
+		colHeader:SetJustifyH("CENTER")
 		colHeader:SetText(colData.title)
 		colHeader:SetTextColor(1, 1, 0)
+		table.insert(columnObjects, colHeader)
 	end
 
 -- Mount Table
