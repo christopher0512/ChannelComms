@@ -164,10 +164,17 @@ function ChannelComms_CreateFrame()
     editBox:SetFontObject(GameFontNormal) 
 
 -- Handle Enter key press to send message
-    editBox:SetScript("OnEnterPressed", function()
-        local message = editBox:GetText()
+editBox:SetScript("OnEnterPressed", function()
+    local message = editBox:GetText()
+    
+    -- ✅ Detect if input matches "number(space)number(space)optional words"
+    if message:match("^%d+%.?%d*%s%d+%.?%d*%s?.*$") then
+        -- ✅ Submit as a waypoint command
+        ChatFrame1.editBox:SetText("/way " .. message)
+        ChatEdit_SendText(ChatFrame1.editBox, false) -- ✅ Auto-submit command
+    else
+        -- ✅ Determine chat channel for normal messages
         local channel
-
         if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
             channel = "INSTANCE_CHAT"
         elseif IsInRaid() then
@@ -178,11 +185,15 @@ function ChannelComms_CreateFrame()
             channel = "SAY"
         end
 
+        -- ✅ Send regular message to correct channel
         if channel then
             SendChatMessage(message, channel)
         end
-        editBox:SetText("") -- Clear after sending
-    end)
+    end
+
+    editBox:SetText("") -- ✅ Clears input after sending
+    editBox:ClearFocus()
+end)
 
 -- Show the frame to ensure it appears
     frame:Show()
