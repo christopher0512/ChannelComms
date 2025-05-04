@@ -9,23 +9,39 @@ local isRepairWindowShown = false
 local isRunning = false -- Define this safeguard variable outside the function scope
 
 -- Function to initialize repairButton
+local isInitialized = false
 local function InitializeRepairButton()
+    if isInitialized then return end
+    isInitialized = true
+    
+    if repairButton:GetScript("OnClick") then return end -- Prevent duplicate script assignment
+    
     repairButton:SetScript("OnClick", function()
         if isRunning then return end -- Prevent recursive execution
         isRunning = true -- Activate lock
-
+        
+        print("Repair button clicked!") -- Debugging check
+        
         -- Toggle RepairWindow visibility
-        if not isRepairWindowShown then
+        isRepairWindowShown = not isRepairWindowShown
+        if isRepairWindowShown then
             RepairWindow:Show()
-            isRepairWindowShown = true
         else
             RepairWindow:Hide()
-            isRepairWindowShown = false
         end
-
+        
         isRunning = false -- Release lock
     end)
 end
+
+-- Ensure it only initializes once after UI loads
+local frame = CreateFrame("Frame")
+frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+frame:SetScript("OnEvent", function(_, event)
+    if event == "PLAYER_ENTERING_WORLD" then
+        InitializeRepairButton()
+    end
+end)
 
 -- Create the repairButton
 _G.repairButton = CreateFrame("Button", "repairButton", UIParent, "UIPanelButtonTemplate")
