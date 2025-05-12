@@ -74,9 +74,10 @@ local function createPopupButton(name, text, point, yOffset, chatMessage)
 end
 
 local cookiesButton = createPopupButton("CookiesButton", "Cookies", "TOP", -30, "Thank you for the Cookies") -- Adjusted spacing
-local tableButton = createPopupButton("TableButton", "Table", "TOP", -60, "Thank you for the Mage Table") -- Adjusted spacing
-local portalButton = createPopupButton("PortalButton", "Portal", "TOP", -90, "Thank you for the Portal") -- Adjusted spacing
-local foodButton = createPopupButton("FoodButton", "Food", "TOP", -120, "Thank you for the Food") -- Adjusted spacing
+local tableButton = createPopupButton("TableButton", "Table", "TOP", -54, "Thank you for the Mage Table") -- Adjusted spacing
+local portalButton = createPopupButton("PortalButton", "Portal", "TOP", -78, "Thank you for the Portal") -- Adjusted spacing
+local foodButton = createPopupButton("FoodButton", "Food", "TOP", -102, "Thank you for the Food") -- Adjusted spacing
+local foodButton = createPopupButton("RezButton", "Rez", "TOP", -126, "Thank you for the Rez") -- Adjusted spacing
 
 -- Add "X" in the upper-right corner to close the popup
 local closeButton = CreateFrame("Button", nil, tyPopupFrame, "UIPanelCloseButton")
