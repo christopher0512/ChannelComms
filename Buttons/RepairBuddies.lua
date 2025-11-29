@@ -46,7 +46,7 @@ end)
 -- Create the repairButton
 _G.repairButton = CreateFrame("Button", "repairButton", UIParent, "UIPanelButtonTemplate")
 repairButton:SetSize(32, 32) -- Ensure consistent button size
-repairButton:SetPoint("LEFT", LootsButton, "RIGHT", 1, 0) -- Positioned next to Gear Score button
+repairButton:SetPoint("LEFT", LootsButton, "RIGHT", 5, 0) -- Positioned next to Gear Score button
 repairButton:SetFrameStrata("MEDIUM")
 repairButton:SetFrameLevel(10)
 repairButton:EnableMouse(true)

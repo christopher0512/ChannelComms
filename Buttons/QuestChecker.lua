@@ -7,7 +7,7 @@
 -- Create Quest Checker Button
 _G.questCheckButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
 questCheckButton:SetSize(32, 32) -- Adjust size
-questCheckButton:SetPoint("LEFT", tymenubutton, "RIGHT", 1, 0) -- Positioned next to ty4Portal button
+questCheckButton:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, -22) -- Positioned below the emote buttons
 
 -- Add an icon for the button
 local questCheckIcon = questCheckButton:CreateTexture(nil, "ARTWORK")

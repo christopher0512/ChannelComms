@@ -3,7 +3,7 @@
 -------------------------------------------------------------
 _G.rollButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
 rollButton:SetSize(32, 32) -- Adjust button size
-rollButton:SetPoint("LEFT", gearScoreButton, "RIGHT", 1, 0) -- Positioned next to Gear Score button
+rollButton:SetPoint("LEFT", gearScoreButton, "RIGHT", 5, 0) -- Positioned next to Gear Score button
 rollButton:SetNormalTexture("Interface\\Icons\\ability_rogue_keepitrolling") -- Set icon
 
 -- Function to handle rolling and sending result to chat

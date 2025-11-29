@@ -1,7 +1,7 @@
 -- Create Lockout Viewer Button
 _G.lockoutButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
 lockoutButton:SetSize(32, 32)
-lockoutButton:SetPoint("LEFT", SoundOutputButton, "RIGHT", 1, 0)
+lockoutButton:SetPoint("LEFT", masterToggleButton, "RIGHT", 5, 0)
 lockoutButton:SetNormalTexture("Interface\\Icons\\inv_10_misc_dragonorb_color1")
 
 -- Tooltip
@@ -14,13 +14,13 @@ lockoutButton:SetScript("OnLeave", function()
     GameTooltip:Hide()
 end)
 
--- Create Lockout Window (Scroll Features Removed)
+-- Create Lockout Window
 local function CreateLockoutWindow()
     if _G.lockoutFrame then return end -- Prevent duplicate frames
 
     -- Main frame
     _G.lockoutFrame = CreateFrame("Frame", "LockoutFrame", UIParent, "BackdropTemplate")
-    lockoutFrame:SetSize(400, 300)
+    lockoutFrame:SetSize(460, 350)
     lockoutFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
     lockoutFrame:SetMovable(true)
     lockoutFrame:EnableMouse(true)
@@ -38,10 +38,23 @@ local function CreateLockoutWindow()
     lockoutFrame:SetScript("OnDragStart", function(self) self:StartMoving() end)
     lockoutFrame:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
 
-    -- Title
-    local title = lockoutFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
-    title:SetPoint("TOP", lockoutFrame, "TOP", 0, -10)
-    title:SetText("Dungeon and Raid Lockouts")
+	-- Title background (full-width red bar)
+	local titleBG = lockoutFrame:CreateTexture(nil, "BACKGROUND")
+	titleBG:SetColorTexture(1, 0, 0, 0.9) -- Red with transparency
+	titleBG:SetPoint("TOPLEFT", lockoutFrame, "TOPLEFT", 4, -4)
+	titleBG:SetPoint("TOPRIGHT", lockoutFrame, "TOPRIGHT", -4, -4)
+	titleBG:SetHeight(32) -- Height of the title bar
+
+	-- Title text (yellow letters centered on the bar)
+	local title = lockoutFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
+	title:SetPoint("CENTER", titleBG, "CENTER", 0, -2)
+	title:SetText("Dungeon and Raid Lockouts")
+	title:SetTextColor(1, 1, 0) -- Yellow text
+
+    local titleBG = lockoutFrame:CreateTexture(nil, "BACKGROUND")
+    titleBG:SetColorTexture(1, 0, 0, 0.7) -- Red background
+    titleBG:SetPoint("TOPLEFT", title, -10, 10)
+    titleBG:SetPoint("BOTTOMRIGHT", title, 10, -10)
 
     -- Close Button
     local closeButton = CreateFrame("Button", nil, lockoutFrame, "UIPanelCloseButton")
@@ -51,59 +64,50 @@ local function CreateLockoutWindow()
         lockoutButton:Enable() -- Re-enable button when closing
     end)
 
-    -- Create Content Container (Scroll Logic Removed)
-    local contentFrame = CreateFrame("Frame", nil, lockoutFrame)
-    contentFrame:SetSize(360, 240)
-    contentFrame:SetPoint("TOPLEFT", lockoutFrame, "TOPLEFT", 10, -40)
+-- ScrollFrame container
+local scrollFrame = CreateFrame("ScrollFrame", nil, lockoutFrame, "UIPanelScrollFrameTemplate")
+scrollFrame:SetPoint("TOPLEFT", lockoutFrame, "TOPLEFT", 10, -40)
+scrollFrame:SetPoint("BOTTOMRIGHT", lockoutFrame, "BOTTOMRIGHT", -30, 10) -- anchors to bottom-right with padding
+
+    -- Content frame inside scroll
+    local contentFrame = CreateFrame("Frame", nil, scrollFrame)
+    contentFrame:SetSize(400, 240)
+    scrollFrame:SetScrollChild(contentFrame)
 
     -- Populate Lockouts
     local function UpdateLockoutList()
         local numInstances = GetNumSavedInstances()
         local yOffset = 0
 
-        -- Clear previous entries before repopulating
+        -- Clear previous entries
         for _, child in ipairs({contentFrame:GetChildren()}) do
             child:Hide()
         end
 
         for i = 1, numInstances do
-            local name, _, reset = GetSavedInstanceInfo(i)
+            local name, _, reset, difficultyID, locked, extended, instanceID, isRaid, maxPlayers, difficultyName = GetSavedInstanceInfo(i)
 
-            -- **Ensure values are fully validated**
             if not name or name == "" then name = "Unknown" end
             local resetTime = (reset and reset > 0) and SecondsToTime(reset) or "No Lockout"
+            local difficulty = difficultyName or "Unknown"
 
-            -- **Debugging Check**
-            if resetTime == "No Lockout" then
-               -- print(string.format("Skipping invalid lockout: name='%s', resetTime='%s'", tostring(name), tostring(resetTime)))
-            else
-                -- **Final Controlled Formatting Check**
-                local formattedText = name .. " - Resets in " .. resetTime -- Remove `string.format()`
-                
+            if resetTime ~= "No Lockout" then
+                local formattedText = string.format("%s (%s) - Resets in %s", name, difficulty, resetTime)
+
                 local lockoutText = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
                 lockoutText:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
-                
-                -- **Explicitly Ensure Both Values Exist Before Setting Text**
-                if formattedText then
-                    lockoutText:SetText(formattedText)
-                    lockoutText:Show()
-                    yOffset = yOffset + 20
-                  --  print("Lockout entry added:", formattedText) -- Debug log
-                else
-                  --  print("Skipping entry due to unexpected nil values:", name, resetTime)
-                end
+
+                lockoutText:SetText(formattedText)
+                lockoutText:Show()
+                yOffset = yOffset + 20
             end
         end
 
-        -- **Confirm Content Frame Updates Properly**
-        contentFrame:SetHeight(math.max(yOffset, 240)) -- Prevent shrinking too much
-
-        -- **Log Update**
-        print(string.format("ContentFrame updated: Height=%d, NumInstances=%d", yOffset, numInstances))
+        contentFrame:SetHeight(yOffset) -- Allow scrolling if taller than scrollFrame
     end
 
     UpdateLockoutList()
-end
+end -- <-- closes CreateLockoutWindow properly
 
 -- Button Click Action
 lockoutButton:SetScript("OnClick", function()

@@ -11,7 +11,7 @@ _G.lootTracker = _G.lootTracker or {}
 -- Create the LootsButton
 _G.LootsButton = CreateFrame("Button", "LootsButton", UIParent, "UIPanelButtonTemplate")
 LootsButton:SetSize(32, 32)
-LootsButton:SetPoint("LEFT", TradeInspectorButton, "RIGHT", 1, 0) -- Placed next to TradeInspectorButton
+LootsButton:SetPoint("LEFT", TradeInspectorButton, "RIGHT", 5, 0) -- Placed next to TradeInspectorButton
 LootsButton:SetFrameStrata("MEDIUM")
 LootsButton:SetFrameLevel(10)
 LootsButton:EnableMouse(true)

@@ -1,5 +1,5 @@
-## Interface: 100000
-## Version: v11.1.5.4.37
+## Interface: 110200, 110107
+## Version: v11.1.7.1.1 	
 ## Title: ChannelComms
 ## Notes: Posts emotes to the channel and has helpful other functions.  Create with my good friend 0110100001101111011101110010000001110111011011110111010101101100011001000010000001111001011011110111010100100000011100110111000001100101011011000110110000100000011100110110101101111001011011000110010101110010
 ## Author: Christopher Young
@@ -12,10 +12,9 @@ ChannelComms.lua
 Buttons\SoulWell.lua 
 Buttons\MountSpecial.lua
 Buttons\PlayedButton.lua
-Buttons\tymenubutton.lua
+## Buttons\tymenubutton.lua
 Buttons\QuestChecker.lua
 Buttons\MasterToggle.lua
-Buttons\SoundOutputButton.lua
 Buttons\LockoutInfo.lua
 Buttons\GearScoreChecker.lua
 Buttons\LetsRoll.lua
@@ -24,6 +23,6 @@ Buttons\LootsButton.lua
 Buttons\RepairBuddies.lua
 Buttons\LeaveGroup.lua
 ## Modules
-Modules/CollectibleTracker/CollectibleTracker.lua
+## Modules/CollectibleTracker/CollectibleTracker.lua
 ## XML Frames
 XML\ChannelComms.xml
