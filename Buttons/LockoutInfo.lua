@@ -153,69 +153,79 @@ local function CreateLockoutWindow()
                 yOffset = yOffset + 20
             end
         end
-        -- Argus Invasion Points header
-        local invasionHeader = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-        invasionHeader:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
-        invasionHeader:SetText("Argus Invasion Points")
-        yOffset = yOffset + 20
+		-- Argus Invasion Points header
+		local invasionHeader = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+		invasionHeader:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
+		invasionHeader:SetText("Argus Invasion Points")
+		yOffset = yOffset + 20
 
-        for questID, invasionName in pairs(invasionQuests) do
-            local isGreater = questID >= 49075
-            local showLine = false
-            local completionText = ""
+		local lineWidth = 360 -- width for the text area inside contentFrame
 
-            if isGreater then
-                if C_QuestLog.IsQuestFlaggedCompleted(questID) then
-                    showLine = true
-                    completionText = "|cff00ff00Completed|r"
-                end
-            else
-                -- Lesser invasion: prefer recorded date, otherwise show available if active
-                if invasionCompletionDates[questID] then
-                    showLine = true
-                    completionText = "|cff00ff00Completed on " .. invasionCompletionDates[questID] .. "|r"
-                elseif C_TaskQuest.IsActive and C_TaskQuest.IsActive(questID) then
-                    showLine = true
-                    completionText = "|cffffff00Available Today|r"
-                end
-            end
+		for questID, invasionName in pairs(invasionQuests) do
+			local isGreater = questID >= 49075
+			local showLine = false
+			local completionText = ""
 
-            if showLine then
-                local invasionText = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-                invasionText:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
-                invasionText:SetText(string.format("%s - %s", invasionName, completionText))
-                invasionText:Show()
+			if isGreater then
+				if C_QuestLog.IsQuestFlaggedCompleted(questID) then
+					showLine = true
+					completionText = "|cff00ff00Completed|r"
+				end
+			else
+				if invasionCompletionDates[questID] then
+					showLine = true
+					completionText = "|cff00ff00Completed on " .. invasionCompletionDates[questID] .. "|r"
+				elseif C_TaskQuest.IsActive and C_TaskQuest.IsActive(questID) then
+					showLine = true
+					completionText = "|cffffff00Available Today|r"
+				end
+			end
 
-                -- For lesser invasions, add a small "Mark Today" button to the right
-                if not isGreater then
-                    local markBtn = CreateFrame("Button", nil, contentFrame)
-                    markBtn:SetSize(16, 16)
-                    markBtn:SetPoint("LEFT", invasionText, "RIGHT", 8, 0)
-                    markBtn:SetNormalTexture("Interface\\Buttons\\UI-CheckBox-Check")
-                    markBtn:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
-                    markBtn:SetScript("OnEnter", function(self)
-                        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-                        GameTooltip:AddLine("Left-click: Mark completed today", 1,1,1)
-                        GameTooltip:AddLine("Right-click: Clear recorded date", 0.8,0.8,0.8)
-                        GameTooltip:Show()
-                    end)
-                    markBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
-                    markBtn:SetScript("OnClick", function(self, button)
-                        if button == "LeftButton" then
-                            invasionCompletionDates[questID] = date("%Y-%m-%d")
-                        elseif button == "RightButton" then
-                            invasionCompletionDates[questID] = nil
-                        end
-                        lockoutFrame.UpdateLockoutList()
-                    end)
-                    markBtn:Show()
-                end
+			if showLine then
+				-- Create a container frame for this line to avoid overlap
+				local lineFrame = CreateFrame("Frame", nil, contentFrame)
+				lineFrame:SetSize(lineWidth + 40, 20) -- extra space for button
+				lineFrame:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
 
-                yOffset = yOffset + 20
-            end
-        end
+				-- Left text (fixed width so button won't overlap)
+				local invasionText = lineFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+				invasionText:SetPoint("LEFT", lineFrame, "LEFT", 0, 0)
+				invasionText:SetWidth(lineWidth)
+				invasionText:SetJustifyH("LEFT")
+				invasionText:SetText(string.format("%s - %s", invasionName, completionText))
+				invasionText:Show()
 
-        contentFrame:SetHeight(yOffset)
+				-- For lesser invasions, add a small "Mark Today" button anchored to the right
+				if not isGreater then
+					local markBtn = CreateFrame("Button", nil, lineFrame)
+					markBtn:SetSize(18, 18)
+					markBtn:SetPoint("RIGHT", lineFrame, "RIGHT", -4, 0) -- fixed right alignment
+					markBtn:SetNormalTexture("Interface\\Buttons\\UI-CheckBox-Check")
+					markBtn:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+					markBtn:SetScript("OnEnter", function(self)
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+						GameTooltip:AddLine("Left-click: Mark completed today", 1,1,1)
+						GameTooltip:AddLine("Right-click: Clear recorded date", 0.8,0.8,0.8)
+						GameTooltip:Show()
+					end)
+					markBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+					markBtn:SetScript("OnClick", function(self, button)
+						if button == "LeftButton" then
+							invasionCompletionDates[questID] = date("%Y-%m-%d")
+						elseif button == "RightButton" then
+							invasionCompletionDates[questID] = nil
+						end
+						lockoutFrame.UpdateLockoutList()
+					end)
+					markBtn:Show()
+				end
+
+				yOffset = yOffset + 22 -- increment by line height (adjust if you change sizes)
+			end
+		end
+
+		contentFrame:SetHeight(yOffset)
+
     end -- closes UpdateLockoutList
 
     -- Expose function so other parts can call it
