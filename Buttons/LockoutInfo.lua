@@ -7,12 +7,15 @@ lockoutButton:SetNormalTexture("Interface\\Icons\\inv_10_misc_dragonorb_color1")
 -- Tooltip
 lockoutButton:SetScript("OnEnter", function()
     GameTooltip:SetOwner(lockoutButton, "ANCHOR_TOP")
-    GameTooltip:SetText("View Dungeon and Raid Lockouts", 1, 1, 1)
+    GameTooltip:SetText("View Dungeon and Raid Lockouts")
     GameTooltip:Show()
 end)
+
 lockoutButton:SetScript("OnLeave", function()
     GameTooltip:Hide()
 end)
+
+
 
 -- Create Lockout Window
 local function CreateLockoutWindow()
@@ -50,7 +53,6 @@ local function CreateLockoutWindow()
 	title:SetPoint("CENTER", titleBG, "CENTER", 0, -2)
 	title:SetText("Dungeon and Raid Lockouts")
 	title:SetTextColor(1, 1, 0) -- Yellow text
-
 
     -- Close Button
     local closeButton = CreateFrame("Button", nil, lockoutFrame, "UIPanelCloseButton")
