@@ -51,10 +51,6 @@ local function CreateLockoutWindow()
 	title:SetText("Dungeon and Raid Lockouts")
 	title:SetTextColor(1, 1, 0) -- Yellow text
 
-    local titleBG = lockoutFrame:CreateTexture(nil, "BACKGROUND")
-    titleBG:SetColorTexture(1, 0, 0, 0.7) -- Red background
-    titleBG:SetPoint("TOPLEFT", title, -10, 10)
-    titleBG:SetPoint("BOTTOMRIGHT", title, 10, -10)
 
     -- Close Button
     local closeButton = CreateFrame("Button", nil, lockoutFrame, "UIPanelCloseButton")
@@ -75,37 +71,53 @@ scrollFrame:SetPoint("BOTTOMRIGHT", lockoutFrame, "BOTTOMRIGHT", -30, 10) -- anc
     scrollFrame:SetScrollChild(contentFrame)
 
     -- Populate Lockouts
-    local function UpdateLockoutList()
-        local numInstances = GetNumSavedInstances()
-        local yOffset = 0
+		local function UpdateLockoutList()
+			local numInstances = GetNumSavedInstances()
+			local yOffset = 0
 
-        -- Clear previous entries
-        for _, child in ipairs({contentFrame:GetChildren()}) do
-            child:Hide()
-        end
+			-- Clear previous entries
+			for _, child in ipairs({contentFrame:GetChildren()}) do
+				child:Hide()
+			end
 
-        for i = 1, numInstances do
-            local name, _, reset, difficultyID, locked, extended, instanceID, isRaid, maxPlayers, difficultyName = GetSavedInstanceInfo(i)
+			-- Gather lockouts into a table
+			local lockouts = {}
+			for i = 1, numInstances do
+				local name, _, reset, difficultyID, locked, extended, instanceID, isRaid, maxPlayers, difficultyName = GetSavedInstanceInfo(i)
 
-            if not name or name == "" then name = "Unknown" end
-            local resetTime = (reset and reset > 0) and SecondsToTime(reset) or "No Lockout"
-            local difficulty = difficultyName or "Unknown"
+				if not name or name == "" then name = "Unknown" end
+				local resetTime = (reset and reset > 0) and SecondsToTime(reset) or "No Lockout"
+				local difficulty = difficultyName or "Unknown"
 
-            if resetTime ~= "No Lockout" then
-                local formattedText = string.format("%s (%s) - Resets in %s", name, difficulty, resetTime)
+				if resetTime ~= "No Lockout" then
+					table.insert(lockouts, {
+						name = name,
+						difficulty = difficulty,
+						resetTime = resetTime,
+					})
+				end
+			end
 
-                local lockoutText = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-                lockoutText:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
+			-- Sort alphabetically by name
+			table.sort(lockouts, function(a, b)
+				return a.name < b.name
+			end)
 
-                lockoutText:SetText(formattedText)
-                lockoutText:Show()
-                yOffset = yOffset + 20
-            end
-        end
+			-- Display sorted lockouts
+			for _, entry in ipairs(lockouts) do
+				local formattedText = string.format("%s (%s) - Resets in %s", entry.name, entry.difficulty, entry.resetTime)
 
-        contentFrame:SetHeight(yOffset) -- Allow scrolling if taller than scrollFrame
-    end
+				local lockoutText = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+				lockoutText:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
 
+				lockoutText:SetText(formattedText)
+				lockoutText:Show()
+				yOffset = yOffset + 20
+			end
+
+			contentFrame:SetHeight(yOffset) -- Allow scrolling if taller than scrollFrame
+		end
+		
     UpdateLockoutList()
 end -- <-- closes CreateLockoutWindow properly
 
