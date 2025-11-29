@@ -41,7 +41,7 @@ local function CreateLockoutWindow()
 
     -- Main frame
     _G.lockoutFrame = CreateFrame("Frame", "LockoutFrame", UIParent, "BackdropTemplate")
-    lockoutFrame:SetSize(460, 350)
+    lockoutFrame:SetSize(460, 480)
     lockoutFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
     lockoutFrame:SetMovable(true)
     lockoutFrame:EnableMouse(true)
@@ -53,7 +53,7 @@ local function CreateLockoutWindow()
         tile = true, tileSize = 32, edgeSize = 12,
         insets = { left = 4, right = 4, top = 4, bottom = 4 }
     })
-    lockoutFrame:SetBackdropColor(0, 0, 0, 0.8)
+    lockoutFrame:SetBackdropColor(0, 0, 0, .90)
 
     -- Dragging
     lockoutFrame:SetScript("OnDragStart", function(self) self:StartMoving() end)
@@ -87,7 +87,7 @@ local function CreateLockoutWindow()
 
     -- Content frame inside scroll
     local contentFrame = CreateFrame("Frame", nil, scrollFrame)
-    contentFrame:SetSize(400, 240)
+    contentFrame:SetSize(460, 480)
     scrollFrame:SetScrollChild(contentFrame)
     -- Populate Lockouts
     local function UpdateLockoutList()
@@ -122,44 +122,105 @@ local function CreateLockoutWindow()
         table.sort(raids)
         table.sort(dungeons)
 
-        -- Raids header
-        if #raids > 0 then
-            local raidHeader = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-            raidHeader:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
-            raidHeader:SetText("Raids")
-            yOffset = yOffset + 20
+		-- Raids header with maroon background and bold yellow text
+		if #raids > 0 then
+			local lineWidth = 386
+			local lineHeight = 20
 
-            for _, text in ipairs(raids) do
-                local fs = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-                fs:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
-                fs:SetText(text)
-                fs:Show()
-                yOffset = yOffset + 20
-            end
-        end
+			local raidHeaderFrame = CreateFrame("Frame", nil, contentFrame)
+			raidHeaderFrame:SetSize(lineWidth + 40, 22)
+			raidHeaderFrame:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
 
-        -- Dungeons header
-        if #dungeons > 0 then
-            local dungeonHeader = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-            dungeonHeader:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
-            dungeonHeader:SetText("Dungeons")
-            yOffset = yOffset + 20
+			local raidHeaderBG = raidHeaderFrame:CreateTexture(nil, "BACKGROUND")
+			raidHeaderBG:SetAllPoints(raidHeaderFrame)
+			raidHeaderBG:SetColorTexture(0.5, 0.0, 0.0, 0.95) -- maroon
 
-            for _, text in ipairs(dungeons) do
-                local fs = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-                fs:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
-                fs:SetText(text)
-                fs:Show()
-                yOffset = yOffset + 20
-            end
-        end
-		-- Argus Invasion Points header
-		local invasionHeader = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-		invasionHeader:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
+			local raidHeader = raidHeaderFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+			raidHeader:SetPoint("CENTER", raidHeaderFrame, "CENTER", 0, 0)
+			raidHeader:SetText("Raids")
+			raidHeader:SetTextColor(1, 1, 0) -- yellow
+			raidHeader:SetFont("Fonts\\FRIZQT__.TTF", 12, "THICKOUTLINE") -- bold look
+
+			yOffset = yOffset + 26
+
+			for _, text in ipairs(raids) do
+				local lineFrame = CreateFrame("Frame", nil, contentFrame)
+				lineFrame:SetSize(lineWidth + 40, lineHeight)
+				lineFrame:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
+
+				local fs = lineFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+				fs:SetPoint("LEFT", lineFrame, "LEFT", 0, 0)
+				fs:SetWidth(lineWidth)
+				fs:SetJustifyH("LEFT")
+				fs:SetText(text)
+				fs:Show()
+
+				yOffset = yOffset + lineHeight + 2
+			end
+
+			-- extra blank line after last raid
+			yOffset = yOffset + 8
+		end
+
+		-- Dungeons header with maroon background and bold yellow text
+		if #dungeons > 0 then
+			local lineWidth = 386
+			local lineHeight = 20
+
+			local dungeonHeaderFrame = CreateFrame("Frame", nil, contentFrame)
+			dungeonHeaderFrame:SetSize(lineWidth + 40, 22)
+			dungeonHeaderFrame:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
+
+			local dungeonHeaderBG = dungeonHeaderFrame:CreateTexture(nil, "BACKGROUND")
+			dungeonHeaderBG:SetAllPoints(dungeonHeaderFrame)
+			dungeonHeaderBG:SetColorTexture(0.5, 0.0, 0.0, 0.95) -- maroon
+
+			local dungeonHeader = dungeonHeaderFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+			dungeonHeader:SetPoint("CENTER", dungeonHeaderFrame, "CENTER", 0, 0)
+			dungeonHeader:SetText("Dungeons")
+			dungeonHeader:SetTextColor(1, 1, 0) -- yellow
+			dungeonHeader:SetFont("Fonts\\FRIZQT__.TTF", 12, "THICKOUTLINE") -- bold look
+
+			yOffset = yOffset + 26
+
+			for _, text in ipairs(dungeons) do
+				local lineFrame = CreateFrame("Frame", nil, contentFrame)
+				lineFrame:SetSize(lineWidth + 40, lineHeight)
+				lineFrame:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
+
+				local fs = lineFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+				fs:SetPoint("LEFT", lineFrame, "LEFT", 0, 0)
+				fs:SetWidth(lineWidth)
+				fs:SetJustifyH("LEFT")
+				fs:SetText(text)
+				fs:Show()
+
+				yOffset = yOffset + lineHeight + 2
+			end
+
+			-- extra blank line after last dungeon
+			yOffset = yOffset + 8
+		end
+		
+		-- Argus Invasion Points header with maroon background and bold yellow text
+		local lineWidth = 386
+		local lineHeight = 22
+
+		local invasionHeaderFrame = CreateFrame("Frame", nil, contentFrame)
+		invasionHeaderFrame:SetSize(lineWidth + 40, 22)
+		invasionHeaderFrame:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
+
+		local invasionHeaderBG = invasionHeaderFrame:CreateTexture(nil, "BACKGROUND")
+		invasionHeaderBG:SetAllPoints(invasionHeaderFrame)
+		invasionHeaderBG:SetColorTexture(0.5, 0.0, 0.0, 0.95) -- maroon
+
+		local invasionHeader = invasionHeaderFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+		invasionHeader:SetPoint("CENTER", invasionHeaderFrame, "CENTER", 0, 0)
 		invasionHeader:SetText("Argus Invasion Points")
-		yOffset = yOffset + 20
+		invasionHeader:SetTextColor(1, 1, 0) -- yellow
+		invasionHeader:SetFont("Fonts\\FRIZQT__.TTF", 12, "THICKOUTLINE") -- bold look
 
-		local lineWidth = 360 -- width for the text area inside contentFrame
+		yOffset = yOffset + 26
 
 		for questID, invasionName in pairs(invasionQuests) do
 			local isGreater = questID >= 49075
@@ -182,12 +243,10 @@ local function CreateLockoutWindow()
 			end
 
 			if showLine then
-				-- Create a container frame for this line to avoid overlap
 				local lineFrame = CreateFrame("Frame", nil, contentFrame)
-				lineFrame:SetSize(lineWidth + 40, 20) -- extra space for button
+				lineFrame:SetSize(lineWidth + 40, lineHeight)
 				lineFrame:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
 
-				-- Left text (fixed width so button won't overlap)
 				local invasionText = lineFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 				invasionText:SetPoint("LEFT", lineFrame, "LEFT", 0, 0)
 				invasionText:SetWidth(lineWidth)
@@ -195,11 +254,10 @@ local function CreateLockoutWindow()
 				invasionText:SetText(string.format("%s - %s", invasionName, completionText))
 				invasionText:Show()
 
-				-- For lesser invasions, add a small "Mark Today" button anchored to the right
 				if not isGreater then
 					local markBtn = CreateFrame("Button", nil, lineFrame)
 					markBtn:SetSize(18, 18)
-					markBtn:SetPoint("RIGHT", lineFrame, "RIGHT", -4, 0) -- fixed right alignment
+					markBtn:SetPoint("RIGHT", lineFrame, "RIGHT", -4, 0)
 					markBtn:SetNormalTexture("Interface\\Buttons\\UI-CheckBox-Check")
 					markBtn:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
 					markBtn:SetScript("OnEnter", function(self)
@@ -220,7 +278,7 @@ local function CreateLockoutWindow()
 					markBtn:Show()
 				end
 
-				yOffset = yOffset + 22 -- increment by line height (adjust if you change sizes)
+				yOffset = yOffset + lineHeight + 2
 			end
 		end
 
