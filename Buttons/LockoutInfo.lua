@@ -16,7 +16,7 @@ end)
 
 -- Argus Invasion Point Quest IDs
 local invasionQuests = {
-    -- Normal Invasion Points
+    -- Normal Invasion Points (world quests, repeatable daily)
     [48282] = "Invasion Point: Aurinor",
     [48283] = "Invasion Point: Bonich",
     [48284] = "Invasion Point: Cen'gar",
@@ -24,7 +24,7 @@ local invasionQuests = {
     [48286] = "Invasion Point: Sangua",
     [48287] = "Invasion Point: Val",
 
-    -- Greater Invasion Points
+    -- Greater Invasion Points (weekly bosses)
     [49075] = "Greater Invasion Point: Matron Folnuna",
     [49183] = "Greater Invasion Point: Mistress Alluradel",
     [49077] = "Greater Invasion Point: Inquisitor Meto",
@@ -33,6 +33,8 @@ local invasionQuests = {
     [49080] = "Greater Invasion Point: Pit Lord Vilemus",
 }
 
+-- Track completion dates for lesser invasions
+local invasionCompletionDates = {}
 -- Create Lockout Window
 local function CreateLockoutWindow()
     if _G.lockoutFrame then return end -- Prevent duplicate frames
@@ -87,105 +89,157 @@ local function CreateLockoutWindow()
     local contentFrame = CreateFrame("Frame", nil, scrollFrame)
     contentFrame:SetSize(400, 240)
     scrollFrame:SetScrollChild(contentFrame)
-
     -- Populate Lockouts
-	local function UpdateLockoutList()
-		local numInstances = GetNumSavedInstances()
-		local yOffset = 0
+    local function UpdateLockoutList()
+        local numInstances = GetNumSavedInstances()
+        local yOffset = 0
 
-		-- Clear previous entries
-		for _, child in ipairs({contentFrame:GetChildren()}) do
-			child:Hide()
-		end
+        -- Clear previous entries (hides previous text and buttons)
+        for _, child in ipairs({contentFrame:GetChildren()}) do
+            child:Hide()
+        end
 
-		-- Separate raids and dungeons
-		local raids, dungeons = {}, {}
+        -- Separate raids and dungeons
+        local raids, dungeons = {}, {}
 
-		for i = 1, numInstances do
-			local name, _, reset, difficultyID, locked, extended, instanceID, isRaid, maxPlayers, difficultyName = GetSavedInstanceInfo(i)
+        for i = 1, numInstances do
+            local name, _, reset, difficultyID, locked, extended, instanceID, isRaid, maxPlayers, difficultyName = GetSavedInstanceInfo(i)
 
-			if name and reset and reset > 0 then
-				local resetTime = SecondsToTime(reset)
-				local difficulty = difficultyName or "Unknown"
-				local entry = string.format("%s (%s) - Resets in %s", name, difficulty, resetTime)
+            if name and reset and reset > 0 then
+                local resetTime = SecondsToTime(reset)
+                local difficulty = difficultyName or "Unknown"
+                local entry = string.format("%s (%s) - Resets in %s", name, difficulty, resetTime)
 
-				if isRaid then
-					table.insert(raids, entry)
-				else
-					table.insert(dungeons, entry)
-				end
-			end
-		end
+                if isRaid then
+                    table.insert(raids, entry)
+                else
+                    table.insert(dungeons, entry)
+                end
+            end
+        end
 
-		-- Sort alphabetically
-		table.sort(raids)
-		table.sort(dungeons)
+        -- Sort alphabetically
+        table.sort(raids)
+        table.sort(dungeons)
 
-		-- Raids header
-		if #raids > 0 then
-			local raidHeader = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-			raidHeader:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
-			raidHeader:SetText("Raids Completed")
-			yOffset = yOffset + 20
+        -- Raids header
+        if #raids > 0 then
+            local raidHeader = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+            raidHeader:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
+            raidHeader:SetText("Raids")
+            yOffset = yOffset + 20
 
-			for _, text in ipairs(raids) do
-				local fs = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-				fs:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
-				fs:SetText(text)
-				fs:Show()
-				yOffset = yOffset + 20
-			end
-		end
+            for _, text in ipairs(raids) do
+                local fs = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+                fs:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
+                fs:SetText(text)
+                fs:Show()
+                yOffset = yOffset + 20
+            end
+        end
 
-		-- Dungeons header
-		if #dungeons > 0 then
-			local dungeonHeader = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-			dungeonHeader:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
-			dungeonHeader:SetText("Dungeons Completed")
-			yOffset = yOffset + 20
+        -- Dungeons header
+        if #dungeons > 0 then
+            local dungeonHeader = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+            dungeonHeader:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
+            dungeonHeader:SetText("Dungeons")
+            yOffset = yOffset + 20
 
-			for _, text in ipairs(dungeons) do
-				local fs = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-				fs:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
-				fs:SetText(text)
-				fs:Show()
-				yOffset = yOffset + 20
-			end
-		end
+            for _, text in ipairs(dungeons) do
+                local fs = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+                fs:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
+                fs:SetText(text)
+                fs:Show()
+                yOffset = yOffset + 20
+            end
+        end
+        -- Argus Invasion Points header
+        local invasionHeader = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        invasionHeader:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
+        invasionHeader:SetText("Argus Invasion Points")
+        yOffset = yOffset + 20
 
-		-- Argus Invasion Points header
-		local invasionHeader = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-		invasionHeader:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
-		invasionHeader:SetText("Argus Invasion Points (Completed)")
-		yOffset = yOffset + 20
+        for questID, invasionName in pairs(invasionQuests) do
+            local isGreater = questID >= 49075
+            local showLine = false
+            local completionText = ""
 
-		for questID, invasionName in pairs(invasionQuests) do
-			local completed = C_QuestLog.IsQuestFlaggedCompleted(questID)
-			if completed then
-				local invasionText = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-				invasionText:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
-				invasionText:SetText(string.format("%s - |cff00ff00Completed|r", invasionName))
-				invasionText:Show()
-				yOffset = yOffset + 20
-			end
-		end
+            if isGreater then
+                if C_QuestLog.IsQuestFlaggedCompleted(questID) then
+                    showLine = true
+                    completionText = "|cff00ff00Completed|r"
+                end
+            else
+                -- Lesser invasion: prefer recorded date, otherwise show available if active
+                if invasionCompletionDates[questID] then
+                    showLine = true
+                    completionText = "|cff00ff00Completed on " .. invasionCompletionDates[questID] .. "|r"
+                elseif C_TaskQuest.IsActive and C_TaskQuest.IsActive(questID) then
+                    showLine = true
+                    completionText = "|cffffff00Available Today|r"
+                end
+            end
 
-		contentFrame:SetHeight(yOffset)
-	end
+            if showLine then
+                local invasionText = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+                invasionText:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 10, -yOffset)
+                invasionText:SetText(string.format("%s - %s", invasionName, completionText))
+                invasionText:Show()
 
-    -- Expose function
+                -- For lesser invasions, add a small "Mark Today" button to the right
+                if not isGreater then
+                    local markBtn = CreateFrame("Button", nil, contentFrame)
+                    markBtn:SetSize(16, 16)
+                    markBtn:SetPoint("LEFT", invasionText, "RIGHT", 8, 0)
+                    markBtn:SetNormalTexture("Interface\\Buttons\\UI-CheckBox-Check")
+                    markBtn:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+                    markBtn:SetScript("OnEnter", function(self)
+                        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+                        GameTooltip:AddLine("Left-click: Mark completed today", 1,1,1)
+                        GameTooltip:AddLine("Right-click: Clear recorded date", 0.8,0.8,0.8)
+                        GameTooltip:Show()
+                    end)
+                    markBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+                    markBtn:SetScript("OnClick", function(self, button)
+                        if button == "LeftButton" then
+                            invasionCompletionDates[questID] = date("%Y-%m-%d")
+                        elseif button == "RightButton" then
+                            invasionCompletionDates[questID] = nil
+                        end
+                        lockoutFrame.UpdateLockoutList()
+                    end)
+                    markBtn:Show()
+                end
+
+                yOffset = yOffset + 20
+            end
+        end
+
+        contentFrame:SetHeight(yOffset)
+    end -- closes UpdateLockoutList
+
+    -- Expose function so other parts can call it
     lockoutFrame.UpdateLockoutList = UpdateLockoutList
 
-    -- Initial update
+    -- Initial update when the window is created
     UpdateLockoutList()
 
-    -- Auto-refresh on events
+    -- Auto-refresh on events and record quest turn-ins
+    lockoutFrame:RegisterEvent("QUEST_TURNED_IN")
     lockoutFrame:RegisterEvent("UPDATE_INSTANCE_INFO")
     lockoutFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-    lockoutFrame:SetScript("OnEvent", function(self, event)
+
+    lockoutFrame:SetScript("OnEvent", function(self, event, questID)
+        if event == "QUEST_TURNED_IN" and invasionQuests[questID] then
+            -- If a lesser invasion is turned in while addon is loaded, record today's date
+            if questID < 49075 then
+                invasionCompletionDates[questID] = date("%Y-%m-%d")
+            end
+        end
+        -- Always refresh the list on relevant events
         self.UpdateLockoutList()
     end)
-end
+end -- closes CreateLockoutWindow
 
 -- Button Click Action
 lockoutButton:SetScript("OnClick", function()
