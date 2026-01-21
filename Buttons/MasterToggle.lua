@@ -60,6 +60,147 @@ local function CreateMapSizeRow(parent, yOffset, toggleFunction, initialState)
         sizeStatusLabel:SetText("2.0")
     end)
 end
+
+-- ============================
+-- Mow the Lawn / Yard Logic
+-- ============================
+
+-- simple per-character key
+local function GetPlayerKey()
+    local name = UnitName("player") or "Unknown"
+    local realm = GetRealmName() or "UnknownRealm"
+    return name .. "-" .. realm
+end
+
+-- init DB table (will only persist if added to TOC later)
+if not ChannelCommsDB then
+    ChannelCommsDB = {}
+end
+local playerKey = GetPlayerKey()
+ChannelCommsDB.yardBounds = ChannelCommsDB.yardBounds or {}
+ChannelCommsDB.yardBounds[playerKey] = ChannelCommsDB.yardBounds[playerKey] or {}
+
+local AutoTrimEnabled = false
+
+-- default fallback yard (your current house as a starter)
+local function GetYardBounds()
+    local b = ChannelCommsDB.yardBounds[playerKey]
+    if not b.mapID then
+        -- default to your known map/coords as a starting point
+        b.mapID = 2352
+        b.minX, b.maxX = 0.355, 0.368
+        b.minY, b.maxY = 0.586, 0.596
+    end
+    return b
+end
+
+local function ApplyCleanGrass()
+    SetCVar("groundEffectDensity", 16)
+    SetCVar("groundEffectDist", 1)
+    SetCVar("grassDensity", 0)
+    SetCVar("grassAnimation", 0)
+	SetCVar("environmentDetail", 0.5)
+    print("Mow the Lawn: Yard trimmed")
+end
+
+local function ApplyFullGrass()
+    SetCVar("groundEffectDensity", 256)
+    SetCVar("groundEffectDist", 200)
+    SetCVar("grassDensity", 128)
+    SetCVar("grassAnimation", 1)
+	SetCVar("environmentDetail", 1.0)
+    print("Mow the Lawn: World grass restored")
+end
+
+local function ToggleMowTheLawn(state)
+    if state then
+        ApplyCleanGrass()
+    else
+        ApplyFullGrass()
+    end
+end
+
+local function PlayerIsInYard()
+    local b = GetYardBounds()
+    if not b.mapID then return false end
+
+    local mapID = C_Map.GetBestMapForUnit("player")
+    if mapID ~= b.mapID then return false end
+
+    local pos = C_Map.GetPlayerMapPosition(mapID, "player")
+    if not pos then return false end
+
+    local x, y = pos.x, pos.y
+    return (x > b.minX and x < b.maxX and y > b.minY and y < b.maxY)
+end
+
+local lastTrimState = nil
+
+local function AutoTrimUpdate()
+    if not AutoTrimEnabled then return end
+
+    local inYard = PlayerIsInYard()
+    if inYard ~= lastTrimState then
+        lastTrimState = inYard
+        if inYard then
+            ApplyCleanGrass()
+        else
+            ApplyFullGrass()
+        end
+    end
+end
+
+-- periodic check
+C_Timer.NewTicker(2, AutoTrimUpdate)
+
+local function ToggleAutoTrim(state)
+    AutoTrimEnabled = state
+    print("Auto Mow the Lawn: " .. (state and "Enabled" or "Disabled"))
+end
+
+local function DefineYardAtCurrentPosition()
+    local mapID = C_Map.GetBestMapForUnit("player")
+    if not mapID then
+        print("Mow the Lawn: Unable to determine map ID.")
+        return
+    end
+
+    local pos = C_Map.GetPlayerMapPosition(mapID, "player")
+    if not pos then
+        print("Mow the Lawn: Unable to determine player position.")
+        return
+    end
+
+    local centerX, centerY = pos.x, pos.y
+    local boxSize = 0.01 -- ~1% box around player
+
+    local b = ChannelCommsDB.yardBounds[playerKey]
+    b.mapID = mapID
+    b.minX = centerX - boxSize
+    b.maxX = centerX + boxSize
+    b.minY = centerY - boxSize
+    b.maxY = centerY + boxSize
+
+    print(string.format("Mow the Lawn: Yard defined at map %d (%.3f, %.3f).", mapID, centerX, centerY))
+end
+
+local function ResetYardBounds()
+    ChannelCommsDB.yardBounds[playerKey] = {}
+    print("Mow the Lawn: Yard bounds reset. They will be redefined next time you use Define Yard.")
+end
+
+local function DebugYardBounds()
+    local b = GetYardBounds()
+    if not b.mapID then
+        print("Mow the Lawn: No yard bounds defined yet.")
+        return
+    end
+    print(string.format(
+        "Mow the Lawn Debug: mapID=%d, X[%.3f-%.3f], Y[%.3f-%.3f]",
+        b.mapID, b.minX, b.maxX, b.minY, b.maxY
+    ))
+end
+
 -- Create the Popup Window
 local popupFrame
 
@@ -70,7 +211,7 @@ masterToggleButton:SetScript("OnClick", function()
     end
 
     popupFrame = CreateFrame("Frame", nil, UIParent, "BasicFrameTemplateWithInset")
-    popupFrame:SetSize(400, 400)
+    popupFrame:SetSize(400, 460)
     popupFrame:SetPoint("CENTER", UIParent, "CENTER")
     popupFrame:SetMovable(true)
     popupFrame:EnableMouse(true)
@@ -144,42 +285,42 @@ masterToggleButton:SetScript("OnClick", function()
         print("Tooltips " .. (state and "On" or "Off"))
     end
 
-	local function ToggleTalkingHead(state)
-		if state then
-			TalkingHeadFrame:Show()
-			print("Talking Head Frame On")
-		else
-			TalkingHeadFrame:Hide()
-			print("Talking Head Frame Off")
-		end
-	end
+    local function ToggleTalkingHead(state)
+        if state then
+            TalkingHeadFrame:Show()
+            print("Talking Head Frame On")
+        else
+            TalkingHeadFrame:Hide()
+            print("Talking Head Frame Off")
+        end
+    end
 
--- Function to Force Hide Talking Head Frame When Needed
-	local function SuppressTalkingHead()
-		if not TalkingHeadFrame:IsShown() then return end
-		TalkingHeadFrame:Hide()
-		-- print("Talking Head Frame forcibly hidden")
-	end
+    -- Function to Force Hide Talking Head Frame When Needed
+    local function SuppressTalkingHead()
+        if not TalkingHeadFrame:IsShown() then return end
+        TalkingHeadFrame:Hide()
+        -- print("Talking Head Frame forcibly hidden")
+    end
 
--- Hook into TALKINGHEAD_REQUESTED Event
-	local eventFrame = CreateFrame("Frame")
-	eventFrame:RegisterEvent("TALKINGHEAD_REQUESTED")
-	eventFrame:SetScript("OnEvent", function(self, event, ...)
-		if event == "TALKINGHEAD_REQUESTED" then
-			SuppressTalkingHead()
-		end
-	end)
+    -- Hook into TALKINGHEAD_REQUESTED Event
+    local eventFrame = CreateFrame("Frame")
+    eventFrame:RegisterEvent("TALKINGHEAD_REQUESTED")
+    eventFrame:SetScript("OnEvent", function(self, event, ...)
+        if event == "TALKINGHEAD_REQUESTED" then
+            SuppressTalkingHead()
+        end
+    end)
 
--- Logic for Talking Head
-	local function ToggleTalkingHead(state)
-		if state then
-			TalkingHeadFrame:Show()
-			print("Talking Head Frame On")
-		else
-			TalkingHeadFrame:Hide()
-			print("Talking Head Frame Off")
-		end
-	end
+    -- Logic for Talking Head
+    local function ToggleTalkingHead(state)
+        if state then
+            TalkingHeadFrame:Show()
+            print("Talking Head Frame On")
+        else
+            TalkingHeadFrame:Hide()
+            print("Talking Head Frame Off")
+        end
+    end
 
     local function ToggleMiniMap(state)
         MinimapCluster:SetShown(state)
@@ -211,6 +352,40 @@ masterToggleButton:SetScript("OnClick", function()
     CreateRow(popupFrame, -150, "MiniMap", ToggleMiniMap, isMiniMapVisible)
     CreateMapSizeRow(popupFrame, -180, SetMiniMapSize, miniMapSize)
     CreateRow(popupFrame, -210, "Objective Tracker", ToggleObjectiveTracker, isObjectiveTrackerVisible)
+
+    -- Mow the Lawn rows
+    CreateRow(popupFrame, -240, "Mow the Lawn", ToggleMowTheLawn, false)
+    CreateRow(popupFrame, -270, "Auto Mow", ToggleAutoTrim, false)
+
+    -- Define / Reset / Debug Yard row (buttons only)
+    local defineButton = CreateFrame("Button", nil, popupFrame, "UIPanelButtonTemplate")
+    defineButton:SetSize(80, 22)
+    defineButton:SetPoint("TOPLEFT", popupFrame, "TOPLEFT", 20, -320)
+    defineButton:SetText("Define Yard")
+    defineButton:SetScript("OnClick", function()
+        DefineYardAtCurrentPosition()
+    end)
+
+    local resetButton = CreateFrame("Button", nil, popupFrame, "UIPanelButtonTemplate")
+    resetButton:SetSize(80, 22)
+    resetButton:SetPoint("LEFT", defineButton, "RIGHT", 10, 0)
+    resetButton:SetText("Reset Yard")
+    resetButton:SetScript("OnClick", function()
+        ResetYardBounds()
+    end)
+
+    local debugButton = CreateFrame("Button", nil, popupFrame, "UIPanelButtonTemplate")
+    debugButton:SetSize(80, 22)
+    debugButton:SetPoint("LEFT", resetButton, "RIGHT", 10, 0)
+    debugButton:SetText("Debug Yard")
+    debugButton:SetScript("OnClick", function()
+        DebugYardBounds()
+    end)
+
+    local yardLabel = popupFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    yardLabel:SetPoint("BOTTOMLEFT", defineButton, "TOPLEFT", 0, 6)
+    yardLabel:SetWidth(140)
+    yardLabel:SetText("Mow the Lawn Tools")
 
     popupFrame:Show()
 end)
