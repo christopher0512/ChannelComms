@@ -53,7 +53,7 @@ local function CreateLockoutWindow()
         tile = true, tileSize = 32, edgeSize = 12,
         insets = { left = 4, right = 4, top = 4, bottom = 4 }
     })
-    lockoutFrame:SetBackdropColor(0, 0, 0, .90)
+    lockoutFrame:SetBackdropColor(1, 1, 0, 0.9)
 
     -- Dragging
     lockoutFrame:SetScript("OnDragStart", function(self) self:StartMoving() end)
@@ -70,7 +70,7 @@ local function CreateLockoutWindow()
     local title = lockoutFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
     title:SetPoint("CENTER", titleBG, "CENTER", 0, -2)
     title:SetText("Dungeon and Raid Lockouts")
-    title:SetTextColor(1, 1, 0)
+    title:SetTextColor(1, 1, 0, 0.9)
 
     -- Close Button
     local closeButton = CreateFrame("Button", nil, lockoutFrame, "UIPanelCloseButton")
