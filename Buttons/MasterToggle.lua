@@ -99,7 +99,7 @@ local function ApplyCleanGrass()
     SetCVar("groundEffectDist", 1)
     SetCVar("grassDensity", 0)
     SetCVar("grassAnimation", 0)
-	SetCVar("environmentDetail", 0.5)
+	SetCVar("environmentDetail", 0.1)
     print("Mow the Lawn: Yard trimmed")
 end
 
