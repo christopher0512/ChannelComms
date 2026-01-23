@@ -332,17 +332,17 @@ masterToggleButton:SetScript("OnClick", function()
         print("MiniMap Size " .. (size == 2.0 and "Large" or "Normal"))
     end
 
-    local function ToggleObjectiveTracker(state)
-        ObjectiveTrackerFrame:SetShown(state)
-        print("Objective Tracker Frame " .. (state and "On" or "Off"))
-    end
+--    local function ToggleObjectiveTracker(state)
+--        ObjectiveTrackerFrame:SetShown(state)
+--        print("Objective Tracker Frame " .. (state and "On" or "Off"))
+--    end
 
     -- Check Initial States
     local isMusicOn = GetCVar("Sound_EnableMusic") == "1"
     local areTooltipsEnabled = not GameTooltip.override
     local isTalkingHeadVisible = TalkingHeadFrame:IsShown()
     local isMiniMapVisible = MinimapCluster:IsShown()
-    local isObjectiveTrackerVisible = ObjectiveTrackerFrame:IsShown()
+--    local isObjectiveTrackerVisible = ObjectiveTrackerFrame:IsShown()
     local miniMapSize = MinimapCluster:GetScale() -- Get initial size of MiniMap
 
     -- Add Rows
@@ -351,16 +351,33 @@ masterToggleButton:SetScript("OnClick", function()
     CreateRow(popupFrame, -120, "Talking Head", ToggleTalkingHead, isTalkingHeadVisible)
     CreateRow(popupFrame, -150, "MiniMap", ToggleMiniMap, isMiniMapVisible)
     CreateMapSizeRow(popupFrame, -180, SetMiniMapSize, miniMapSize)
-    CreateRow(popupFrame, -210, "Objective Tracker", ToggleObjectiveTracker, isObjectiveTrackerVisible)
+--    CreateRow(popupFrame, -210, "Objective Tracker", ToggleObjectiveTracker, isObjectiveTrackerVisible)
+
+-- Toggle Function for Suppressing UI/AddOn Errors
+	local function ToggleScriptErrors(state)
+		if state then
+			ConsoleExec("scriptErrors 0")
+			print("UI/AddOn Errors: On")
+		else
+			ConsoleExec("scriptErrors 1")
+			print("UI/AddOn Errors: Off")
+		end
+	end
+
+	-- Check initial state from CVar
+	local scriptErrorsOn = GetCVar("scriptErrors") == "1"
+
+	-- Add Row for Suppress Errors (placed under MiniMap Resizing)
+	CreateRow(popupFrame, -210, "Suppress Errors", ToggleScriptErrors, scriptErrorsOn)
 
     -- Mow the Lawn rows
-    CreateRow(popupFrame, -240, "Mow the Lawn", ToggleMowTheLawn, false)
-    CreateRow(popupFrame, -270, "Auto Mow", ToggleAutoTrim, false)
+    CreateRow(popupFrame, -340, "Mow the Lawn", ToggleMowTheLawn, false)
+    CreateRow(popupFrame, -370, "Auto Mow", ToggleAutoTrim, false)
 
     -- Define / Reset / Debug Yard row (buttons only)
     local defineButton = CreateFrame("Button", nil, popupFrame, "UIPanelButtonTemplate")
     defineButton:SetSize(80, 22)
-    defineButton:SetPoint("TOPLEFT", popupFrame, "TOPLEFT", 20, -320)
+    defineButton:SetPoint("TOPLEFT", popupFrame, "TOPLEFT", 20, -420)
     defineButton:SetText("Define Yard")
     defineButton:SetScript("OnClick", function()
         DefineYardAtCurrentPosition()
